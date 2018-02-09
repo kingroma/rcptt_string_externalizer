@@ -1,22 +1,35 @@
 package com.java.util;
 
 /**
- * 시작시 parameter 가 -help 로 들어왔을경우
- * not yet
+ * 시작시 parameter 가 -help 로 들어왔을경우 
+ * 내용을 출력하며 종료합니다.
  * @author suresoft
  *
  */
 public class HelpMessage {
 	
+	/**
+	 * 메시지를 저장할 Stringbuilder입니다.
+	 */
 	private StringBuilder helpMessageStringBuilder;
+	
+	/**
+	 * 생성과 동시에 stringbuilder의 내용을 저장합니다.
+	 */
 	public HelpMessage(){
 		this.setStringBuilder();
 	}
+	
+	/**
+	 * msg 내용을 출력합니다.
+	 */
 	public void msg(){
 		Logger.write(helpMessageStringBuilder.toString());
 	}
 	
-	
+	/**
+	 * stringbuilder를 이용하여 내용을 넣습니다.
+	 */
 	private void setStringBuilder(){
 		
 		String term = "\n\n=========================================================================\n\n";

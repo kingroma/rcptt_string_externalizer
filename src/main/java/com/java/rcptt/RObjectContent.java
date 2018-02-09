@@ -63,39 +63,39 @@ public class RObjectContent {
 	 */
 	public String output() {
 
-		StringBuilder sb = new StringBuilder();
+		StringBuilder outputStringBuilder = new StringBuilder();
 		String newLine = "\n";
-		sb.append(startLine);
-		sb.append(newLine);
-		sb.append(contentType);
-		sb.append(newLine);
-		sb.append(entryName);
-		sb.append(newLine);
+		outputStringBuilder.append(startLine);
+		outputStringBuilder.append(newLine);
+		outputStringBuilder.append(contentType);
+		outputStringBuilder.append(newLine);
+		outputStringBuilder.append(entryName);
+		outputStringBuilder.append(newLine);
 
 
 		if(isParameter) { // 만약에 이 오브젝트가 parameter인경우  파라미터의 정보를 담는다.
-			sb.append(newLine);
+			outputStringBuilder.append(newLine);
 
 			for(Object obj : ProgramData.getInstance().getParameterMap().keySet()){
 				String key = (String)obj;
 				String value = ProgramData.getInstance().searchKey(key);
 
 				if(value!=null){
-					sb.append(value);
-					sb.append("=");
-					sb.append(Converter.convertKoreanToUnicode(key));
-					sb.append(newLine);
+					outputStringBuilder.append(value);
+					outputStringBuilder.append("=");
+					outputStringBuilder.append(Converter.convertKoreanToUnicode(key));
+					outputStringBuilder.append(newLine);
 				}
 			}
-			sb.append(newLine);
+			outputStringBuilder.append(newLine);
 		}else { // 파라미터 정보가아닐경우 eclscript, testcase 인경우
-			sb.append(text);
+			outputStringBuilder.append(text);
 		}
 
-		sb.append(endLine);
-		sb.append(newLine);
+		outputStringBuilder.append(endLine);
+		outputStringBuilder.append(newLine);
 
-		return sb.toString();
+		return outputStringBuilder.toString();
 	}
 
 	/**

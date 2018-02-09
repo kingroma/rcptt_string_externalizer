@@ -15,8 +15,9 @@ public class CheckProgramIniAndPropertiesFile {
 	private static StringBuilder iniHelpText;
 	private static StringBuilder defaultParameterHelpText;
 	private static StringBuilder extensionListHelpText;
-	private static ArrayList<String> nameList; 
-	
+	private static ArrayList<String> nameList;	
+	private static String extensionListFileName = "extensionList.properties";
+	private static String defaultParameterFilename = "defaultParameter.properties";
 	
 	private CheckProgramIniAndPropertiesFile(){
 	}
@@ -27,8 +28,8 @@ public class CheckProgramIniAndPropertiesFile {
 		nameList = new ArrayList<String>();
 		
 		nameList.add(UserInfo.getInstance().getIniFileName());
-		nameList.add(ProgramData.getInstance().getDefaultParameterFilename());
-		nameList.add(ProgramData.getInstance().getExtensionListFileName());
+		nameList.add(defaultParameterFilename);
+		nameList.add(extensionListFileName);
 		
 		int ret = 0;
 		for(String path : nameList){
@@ -42,9 +43,9 @@ public class CheckProgramIniAndPropertiesFile {
 					
 					if(path.equals(UserInfo.getInstance().getIniFileName())){
 						fos.write(iniHelpText.toString().getBytes());
-					}else if(path.equals(ProgramData.getInstance().getDefaultParameterFilename())){
+					}else if(path.equals(defaultParameterFilename)){
 						fos.write(Converter.convertKoreanToUnicode(defaultParameterHelpText.toString()).getBytes());
-					}else if(path.equals(ProgramData.getInstance().getExtensionListFileName())){
+					}else if(path.equals(extensionListFileName)){
 						fos.write(Converter.convertKoreanToUnicode(extensionListHelpText.toString()).getBytes());
 					}
 					

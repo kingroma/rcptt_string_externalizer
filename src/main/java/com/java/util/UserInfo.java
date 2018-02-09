@@ -31,15 +31,35 @@ import java.util.Properties;
  *
  */
 public class UserInfo {
+	
+	/**
+	 * UserInfo 변수를 가지고 있을 Instance 입니다.
+	 */
 	private static UserInfo INSTANCE;
 	
+	/**
+	 * rcptt++.ini 파일의 이름을 UserData에서 가지고 있습니다.
+	 */
 	private String iniFileName = "rcptt++.ini";
+	
+	/**
+	 * rcptt++.ini에서 읽어온 정보들을 map형식으로 가지고 있습니다.
+	 * get 으로 반환 가능합니다.
+	 */
 	private HashMap<String, String> iniInfoMap;
 	
+	/**
+	 * UserInfo 생성과 동시에 infoEnv() 메소드 호출합니다.
+	 */
 	private UserInfo() {
 		initEnv();
 	}
 
+	/**
+	 * Instance를 반환하며 
+	 * Instance == null 일경우 새로 생성 
+	 * @return
+	 */
 	public static UserInfo getInstance() {
 		if (INSTANCE == null) {
 			INSTANCE = new UserInfo();
@@ -50,7 +70,11 @@ public class UserInfo {
 
 
 	/**
-	 * 
+	 * UserInfo 생성이 되었을때 ini 파일을 읽기 위하여 
+	 * 메소드가 호출됩니다.
+	 * 기본 default 이름은 rcptt++.ini 파일입니다.
+	 * ini 파일을 읽어 iniInfoMap에 properties 파일의 내용을 추가합니다.
+	 * 추후 다른 클래스에서 경로들을 확인해야할 때가 있기 때문에 메소드를 추가하였습니다.
 	 */
 	private void initEnv() {
 		iniInfoMap = new HashMap<String,String>();

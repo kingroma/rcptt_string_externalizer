@@ -8,26 +8,45 @@ import com.java.project.RcpttProject;
 /**
  * 프로그램에서 사용할 전역 변수를 저장하는 Class 입니다.
  * @author suresoft
- *
  */
-//public static ArrayList<Parameter> parameters = new ArrayList<Parameter>();
 public class ProgramData {
-	// program 에서 전역변수로 사용될 변수를 저장
-	
+	/**
+	 * 싱글톤 패턴이며 ProgramData를 가지고 있을 변수  
+	 */
 	private static ProgramData INSTANCE;
 	
+	/**
+	 * Project 파일 하나만 필요하므로 ProgramData에서 하나를 가지고 있습니다.
+	 * set get 으로 추가 혹은 반환이 가능합니다.
+	 */
 	private RcpttProject project;
+	
+	/**
+	 * testcase에서 parameter.ctx 파일을 링크하기 위해서는 
+	 * parameter.ctx파일의 고유한 id 를 가지고 있어야 하며 그 아이디 값을
+	 * testcase안의 contextId를 추가하여 링크하여야 합니다.
+	 * 링크를 하기위해서 parameter.ctx파일의 고유 id 값을 ProgramData에서 가지고있습니다. 
+	 */
 	private String parameterCtxId;
+	
+	/**
+	 * Properties파일에서 읽은 parameter들과
+	 * parameter.ctx파일에서 읽은 파라미터를 총 저장하는 Map형식의 변수입니다.
+	 */
 	private HashMap<String, String> parameterMap;
-	
-	private String extensionListFileName = "extensionList.properties";
-	private String defaultParameterFilename = "defaultParameter.properties";
-	
+
+	/**
+	 * 첫 클래스가 생성되었을때
+	 * parameterMap 을 새로 생성합니다.
+	 */
 	private ProgramData(){
-		parameterMap = new HashMap<String, String>();
-		
+		parameterMap = new HashMap<String, String>();		
 	}
 	
+	/**
+	 * ProgramData Instance를 반환합니다.
+	 * @return
+	 */
 	public static ProgramData getInstance(){
 		if(INSTANCE == null){
 			INSTANCE = new ProgramData();
@@ -84,21 +103,6 @@ public class ProgramData {
 		return (!str.equals("") && !str.equals("\\"));
 	}
 
-	public String getExtensionListFileName() {
-		return extensionListFileName;
-	}
-
-	public void setExtensionListFileName(String extensionListFileName) {
-		this.extensionListFileName = extensionListFileName;
-	}
-
-	public String getDefaultParameterFilename() {
-		return defaultParameterFilename;
-	}
-
-	public void setDefaultParameterFilename(String defaultParameterFilename) {
-		this.defaultParameterFilename = defaultParameterFilename;
-	}
 
 	
 	
