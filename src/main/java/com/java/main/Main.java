@@ -1,7 +1,9 @@
 package com.java.main;
 
 import com.java.controller.Controller;
-import com.java.util.Help;
+import com.java.util.HelpMessage;
+import com.java.util.MyTimer;
+import com.java.util.CheckProgramIniAndPropertiesFile;
 
 /**
  * <pre>
@@ -12,6 +14,9 @@ import com.java.util.Help;
  * 
  */
 public class Main {
+	
+	
+	
 	// TODO 다음주 월요일 까지
 	// TODO git.eclipse.org/c/rcptt/org.eclipse.rcptt.git
 	// TODO equals 너무 많이씁니다.11618 22719
@@ -38,14 +43,26 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if(args.length==0) {
-			Controller controller = new Controller();
-			controller.process();
-		}
-		else if(args[0].equals("-help")) {
-			Help help = new Help();
+		
+		
+		if(CheckProgramIniAndPropertiesFile.createFile()){
+			if(args.length==0) {
+				Controller controller = new Controller();
+				controller.process();
+			}
+			else if(args[0].equals("-help")) {
+				HelpMessage help = new HelpMessage();
+				help.msg();
+			}
+		}else{
+			HelpMessage help = new HelpMessage();
 			help.msg();
 		}
+		
+		
+		
+		
+		
 	}
 }
 

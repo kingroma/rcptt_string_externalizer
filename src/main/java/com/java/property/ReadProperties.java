@@ -57,7 +57,7 @@ public class ReadProperties {
 		} catch (IOException exception) {
 			Logger.write("properties read error");
 		}
-		Logger.write(" CT경로에서 찾은 .properties의 갯수 : "+propertiesFileCount); // 몇개의 properties 파일을 읽었는지 출력합니다.		
+		Logger.write(" CT경로에서 찾은 .properties의 갯수 : "+propertiesFileCount); // 몇개의 properties 파일을 읽었는지 출력합니다.
 	}
 	
 	/**
