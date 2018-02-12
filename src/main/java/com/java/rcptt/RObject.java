@@ -12,31 +12,32 @@ import java.util.ArrayList;
 import com.java.util.Logger;
 import com.java.util.ProgramData;
 
-//--- RCPTT testcase ---
-//Format-Version: 1.0
-//Context-Type: org.eclipse.rcptt.ctx.parameters
-//Element-Name: p
-//Element-Type: context
-//Element-Version: 2.0
-//Id: __XnUYPseEeerEKrtJAzT4w
-//Runtime-Version: 2.2.0.201706152316
-//Save-Time: 1/17/18 1:18 PM
-//
+/*
+ * 
+--- RCPTT testcase ---
+Format-Version: 1.0
+Context-Type: org.eclipse.rcptt.ctx.parameters
+Element-Name: p
+Element-Type: context
+Element-Version: 2.0
+Id: __XnUYPseEeerEKrtJAzT4w
+Runtime-Version: 2.2.0.201706152316
+Save-Time: 1/17/18 1:18 PM
 
+------=_.parameters.context-2e023de5-3294-36a9-ac1d-6701f05a40ee
+Content-Type: text/properties
+Entry-Name: .parameters.context
 
+#Wed Jan 17 13:18:21 KST 2018
 
-//------=_.parameters.context-2e023de5-3294-36a9-ac1d-6701f05a40ee
-//Content-Type: text/properties
-//Entry-Name: .parameters.context
-//
-//#Wed Jan 17 13:18:21 KST 2018
-//
-//------=_.parameters.context-2e023de5-3294-36a9-ac1d-6701f05a40ee--
+------=_.parameters.context-2e023de5-3294-36a9-ac1d-6701f05a40ee--
 
-//위는 ctx 파일의 형태 입니다.
-// 처음에 기본 정보가 나오며 그다음 아래에 ecl script 나 properties 파일이나 description 이 나옵니다.
-// 그래서 위에 기본 정보는 ROjbectForm에서 저장을 ArrayList로 한줄한줄 가지고있습니다.
-// 아래의 정보의 경우 parameter 뿐만아니라 따른 파일도 올 수 있기 때문에 ArrayList로 관리합니다.
+위는 ctx 파일의 형태 입니다.
+ 처음에 기본 정보가 나오며 그다음 아래에 ecl script 나 properties 파일이나 description 이 나옵니다.
+ 그래서 위에 기본 정보는 ROjbectForm에서 저장을 ArrayList로 한줄한줄 가지고있습니다.
+ 아래의 정보의 경우 parameter 뿐만아니라 따른 파일도 올 수 있기 때문에 ArrayList로 관리합니다.
+ 
+ */
 
 
 /**
@@ -259,10 +260,10 @@ public class RObject {
 	* ECL 스크립트 파일이 맞은 경우 ecl text를
 	* RObject에 저장합니다.
 	*/
-	public void setECLCode(String str) {
+	public void setECLCode(String eclCode) {
 		for(RObjectContent tempRObjectContent : this.content){
 			if (tempRObjectContent.getType() == RcpttResourceType.ECL) {
-				tempRObjectContent.setText(str);
+				tempRObjectContent.setText(eclCode);
 			}
 		}
 	}

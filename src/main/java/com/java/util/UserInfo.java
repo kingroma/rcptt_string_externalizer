@@ -14,12 +14,10 @@ import java.util.Properties;
  * 
  *  #RCPTT 자동화 기본 경로 설정 파일 
  *	
- *	
- *	language=ko
- *	CodeScrollFilePath=C:\Program Files (x86)\CodeScroll Controller Tester 3.0
- *	ProjectPath=C:\Users\suresoft\rcpttWorkspace\RCPTT_individual_test
- *	ParameterCtxPath=C:\Users\suresoft\rcpttWorkspace\RCPTT_individual_test\RCPTT_QA\p.ctx
- *	
+ *	language= (예 = ko)
+ *	CodeScrollFilePath= (예 = C:\Program Files (x86)\CodeScroll Controller Tester 3.0)
+ *	ProjectPath= (예 = C:\Users\suresoft\rcpttWorkspace\RCPTT_individual_test)
+ *	ParameterCtxPath=(예 = C:\Users\suresoft\rcpttWorkspace\RCPTT_individual_test\RCPTT_QA\p.ctx)
  *	
  *	#language=ko,ko_KR,en_US  언어 선택
  *	#CodeScrollFilePath=CS Path 코드스크롤 경로
@@ -33,7 +31,7 @@ import java.util.Properties;
 public class UserInfo {
 	
 	/**
-	 * UserInfo 변수를 가지고 있을 Instance 입니다.
+	 * UserInfo 변수를 가지고 있을 INSTANCE 입니다.
 	 */
 	private static UserInfo INSTANCE;
 	
@@ -112,24 +110,24 @@ public class UserInfo {
 	 * @param key
 	 * @return
 	 */
-	private String getiniInfo(String key){
+	private String searchIniInfo(String key){
 		return iniInfoMap.get(key);
 	}
 
 	public String getLanguage() {
-		return getiniInfo("Language");
+		return searchIniInfo("Language");
 	}
 
 	public String getCTPath() {
-		return getiniInfo("CodeScrollFilePath");
+		return searchIniInfo("CodeScrollFilePath");
 	}
 
 	public String getProjectPath() {
-		return getiniInfo("ProjectPath");
+		return searchIniInfo("ProjectPath");
 	}
 
 	public String getParameterCtxPath() {
-		return getiniInfo("ParameterCtxPath");
+		return searchIniInfo("ParameterCtxPath");
 	}
 
 	public String getIniFileName() {

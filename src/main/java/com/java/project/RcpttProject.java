@@ -36,11 +36,11 @@ public class RcpttProject {
 	/**
 	 * 생성시 path를 rootPath에 저장하며
 	 * ArrayList RObject를 새로 생성한다.
-	 * @param path
+	 * @param rootPath
 	 */
-	public RcpttProject(String path) {
+	public RcpttProject(String rootPath) {
 		
-		this.rootPath = path;
+		this.rootPath = rootPath;
 		this.rObjects = new ArrayList<RObject>();
 	}
 	

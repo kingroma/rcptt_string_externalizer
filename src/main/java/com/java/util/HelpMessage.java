@@ -4,7 +4,6 @@ package com.java.util;
  * 시작시 parameter 가 -help 로 들어왔을경우 
  * 내용을 출력하며 종료합니다.
  * @author suresoft
- *
  */
 public class HelpMessage {
 	
@@ -28,7 +27,8 @@ public class HelpMessage {
 	}
 	
 	/**
-	 * stringbuilder를 이용하여 내용을 넣습니다.
+	 * stringbuilder를 이용하여 
+	 * 도움을 주는 내용들을 넣습니다.
 	 */
 	private void setStringBuilder(){
 		

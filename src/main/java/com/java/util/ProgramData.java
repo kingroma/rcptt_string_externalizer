@@ -64,7 +64,7 @@ public class ProgramData {
 		key = ParameterValidation.getValidationKey(key);
 		value = Converter.convertUnicodeToKorean(ParameterValidation.getValidationValue(value));
 		
-		if(valueChecker(value)){
+		if(valueCheck(value)){
 			parameterMap.put(value , key);
 		}
 	}
@@ -80,7 +80,7 @@ public class ProgramData {
 		key = ParameterValidation.getValidationPath(path)+"_"+ParameterValidation.getValidationKey(key);
 		value = Converter.convertUnicodeToKorean(ParameterValidation.getValidationValue(value));
 		
-		if(valueChecker(value)){
+		if(valueCheck(value)){
 			parameterMap.put(value , key);
 		}
 		
@@ -102,7 +102,7 @@ public class ProgramData {
 	 * @param str
 	 * @return
 	 */
-	private boolean valueChecker(String str){
+	private boolean valueCheck(String str){
 		return (!str.equals("") && !str.equals("\\"));
 	}
 	

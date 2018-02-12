@@ -7,9 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.java.project.__Project;
 import com.java.project.RcpttProject;
-import com.java.property.ReadProperties;
+import com.java.property.ProductProperties;
 import com.java.rcptt.RObject;
 import com.java.replacement.ReplacementHelper;
 import com.java.util.Converter;
@@ -17,6 +16,7 @@ import com.java.util.Logger;
 import com.java.util.MyTimer;
 import com.java.util.ProgramData;
 import com.java.util.UserInfo;
+
 
 /**
  *
@@ -75,7 +75,7 @@ public class Controller {
 		// process 1과 process2에서 읽어온 parameter를 확인하여
 		// process 3에서 읽은 testcase 파일에 있는 문자열을 $key
 		// 형식으로 치환합니다.
-		substitution(); // process 4
+		replaceStringToKey(); // process 4
 
 		// 마지막으로 parameterMap에있는 모든 정보들을 저장합니다.
 		lastSave();
@@ -110,17 +110,14 @@ public class Controller {
 	 * 모든 .properties파일을 읽는다
 	 * 읽은 후 ProgramData에 있는 parameterMap에 저장합니다.
 	 * </pre>
-	 * @see ReadProperties
+	 * @see ProductProperties
 	 *
 	 */
 	private void readProperties() {
-
 		Logger.write("\nprocess 2 \n read properties file \n " + UserInfo.getInstance().getCTPath());
 
-		ReadProperties readProperties = new ReadProperties(UserInfo.getInstance().getCTPath()); // Property property
-		readProperties.read();
-
-
+		ProductProperties productProperties = new ProductProperties(UserInfo.getInstance().getCTPath()); // Property property
+		productProperties.read();
 	}
 
 
@@ -134,14 +131,12 @@ public class Controller {
 	 * @see __Project
 	 */
 	private void readProject() {
-
-		Logger.write("\nprocess 3\n read RCPTT project folder\n "+UserInfo.getInstance().getProjectPath());
-
-		ProgramData.getInstance().setProject(new RcpttProject(UserInfo.getInstance().getProjectPath()));
-		ProgramData.getInstance().getProject().read();
-
+		String projectPath = UserInfo.getInstance().getProjectPath();
+		Logger.write("\nprocess 3\n read RCPTT project folder\n " + projectPath);
+		RcpttProject rcpttPrj = new RcpttProject(projectPath);
+		ProgramData.getInstance().setProject(rcpttPrj);
+		rcpttPrj.read();
 		Logger.write(" RCPTT 프로젝트에서 읽어온 파일 갯수 : " + ProgramData.getInstance().getProject().getObjects().size());
-
 	}
 
 	/**
@@ -153,14 +148,13 @@ public class Controller {
 	 * </pre>
 	 * @see ReplacementHelper
 	 */
-	private void substitution() {
+	private void replaceStringToKey() {
 		Logger.write("\nprocess 4 \n substitution");
 
-		readProgramProperties();
+		readProductProperties();
 
-		ReplacementHelper substitution = new ReplacementHelper(); // Substitution substitution
-		substitution.replce();
-
+		ReplacementHelper replacementHelper = new ReplacementHelper(); // Substitution substitution
+		replacementHelper.replce();
 	}
 
 	/**
@@ -184,7 +178,7 @@ public class Controller {
 	 * 사용자가 추가하고 싶은 문자열이 있을경우 이 properties jar파일안에
 	 * 입력해주시면 됩니다.
 	 */
-	private void readProgramProperties(){
+	private void readProductProperties(){
 		String defaultParameterFileName = "defaultParameter.properties"; // 파일 이름
 
 		InputStream is = null;

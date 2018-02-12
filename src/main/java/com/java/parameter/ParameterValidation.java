@@ -22,8 +22,16 @@ public class ParameterValidation {
 	private static final String KEY_VALIDATION_REGEX = "[가-힣 \t`~!@#$%^&*()+=\\-,:?<>|]";
 	
 	/**
-	 * 생성자 숨기기
+	 * plugins|plugin|.Alpha|.properties|_ko_KR|_ko
+	 * 가 있을경우 제거하기 위함 입니다.
 	 */
+	private static final String KEY_REMOVE_REGEX = "plugins|plugin|.Alpha|.properties|_ko_KR|_ko";
+	
+	/**
+	 * \\ | / 를 제거하기 위함입니다. 제거시 ' . ' 으로 변경합니다.
+	 */
+	private static final String KEY_REMOVE_REGEX2 = "\\\\|/";
+	
 	private ParameterValidation(){
 
 	}
@@ -84,74 +92,71 @@ public class ParameterValidation {
 	/**
 	 * RCPTT에서 확인이 어려운 특수문자와
 	 * 몇몇가지의 문자열패턴을 제거합니다.
-	 * @param str
+	 * @param value
 	 * @return
 	 */
-	private static String getBasicValidation(String str){
+	private static String getBasicValidation(String value){
 		
-		str = str.replace("plugins", "");
-		str = str.replace("plugin", "");
-		str = str.replace(".Alpha", "");
-		str = str.replace(".properties", "");
-		str = str.replace("_ko_KR", "");
-		str = str.replace("_ko", "");
-		
+		//plugins|plugin|.Alpha|.properties|_ko_KR|_ko 제거
+		value = value.replaceAll(KEY_REMOVE_REGEX, "");
+		// \ / 제거하며 제거시 .으로 치환
+		value = value.replaceAll(KEY_REMOVE_REGEX2, ".");
+				
 		//특수문자 , 한글등 제거
-		str = str.replaceAll(KEY_VALIDATION_REGEX,"");
+		value = value.replaceAll(KEY_VALIDATION_REGEX,"");
 		
-		str = str.replace("\\", ".");
-		str = str.replace("/", ".");
+		
 
-		return str;
+		return value;
 	}
 
 	/**
 	 * 경로를 받아와 경로에 있는 문자열중 v123123.123
 	 * 버전과 관련되어있는 문자열을 제거하는 메소드
 	 * 하드코딩 되어있습니다.
-	 * @param str
+	 * @param inputString
 	 * @return
 	 */
-	private static String removeVersion(String str){
+	private static String removeVersion(String inputString){
 		// org.eclipse.ui.views.nl_ko_4.6.0.v20161126060001.jar-org/eclipse/ui/internal/views/properties/messages_ko.properties
 		// 버전이 들어가있는 형태는 위와 같습니다.
 
-		if (str.contains(".jar")) { // jar파일인 경우의 조건입니다.
-			str = str.replace(".jar", ""); // 먼저 .jar 문자열을 없앱니다.
+		if (inputString.contains(".jar")) { // jar파일인 경우의 조건입니다.
+			inputString = inputString.replace(".jar", ""); // 먼저 .jar 문자열을 없앱니다.
 
-			int startPoint = str.indexOf("_");
-			int endPoint = str.indexOf("-");
+			int startIndex = inputString.indexOf("_");
+			int endIndex = inputString.indexOf("-");
 			// _ko_4.6.0.v20161126060001.jar-
 			// 위의 ko 와 4.6.0 등의 문자열을 버리기 위하여 진행합니다.
 
-			if ((startPoint >= 0) && (endPoint > 0)) {// 만약에 해당되는게 있을 경우에
-				str = str.replace(str.substring(startPoint, endPoint), "");
+			if ((startIndex >= 0) && (endIndex > 0)) {// 만약에 해당되는게 있을 경우에
+				inputString = inputString.replace(inputString.substring(startIndex, endIndex), "");
 			}
 
-			endPoint = str.indexOf("-");
-			int lastPoint = str.lastIndexOf("/");
+			endIndex = inputString.indexOf("-");
+			int lastIndex = inputString.lastIndexOf("/");
 			// -org/eclipse/ui/internal/views/properties
 			// 위의 문자열을 버리기위하여 진행합니다.
 
-			if ((lastPoint >= 0) && (endPoint > 0)) {// 만약에 해당되는게 있으면
-				str = str.replace(str.substring(endPoint, lastPoint), "");
+			if ((lastIndex >= 0) && (endIndex > 0)) {// 만약에 해당되는게 있으면
+				inputString = inputString.replace(inputString.substring(endIndex, lastIndex), "");
 			}
 
-			return "jar_" + str;
+			return "jar_" + inputString;
 
 		} else { // jar 파일이 아닌경우
 					// com.codescroll.gp.log_1.0.0.201709271840\OSGI-INF\l10n\bundle_ko_KR.properties
-			int startPoint = str.indexOf("_"); // 위에 ' _ ' 시작 뒤는 버전이 나오므로 시작
+			int startIndex = inputString.indexOf("_"); // 위에 ' _ ' 시작 뒤는 버전이 나오므로 시작
 												// 포인트는 ' _ '
-			int endPoint = str.indexOf("\\");
+			int endIndex = inputString.indexOf("\\");
 			// 마지막 포인트는 ' \ '  >>   _1.0.0.201709271840 삭제
 
 			// [[ - ]] ~~~ [[ \\ ]] 의부븐을 삭제합니다.
-			if ((startPoint > 0) && (endPoint > 0)) {
-				return str.replace(str.substring(startPoint, endPoint), "");
+			if ((startIndex > 0) && (endIndex > 0)) {
+				return inputString.replace(inputString.substring(startIndex, endIndex), "");
 			}
 		}
 
-		return str;
+		return inputString;
 	}
 }

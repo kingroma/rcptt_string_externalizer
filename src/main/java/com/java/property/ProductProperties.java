@@ -24,7 +24,7 @@ import com.java.util.UserInfo;
  * @author suresoft
  *
  */
-public class ReadProperties {
+public class ProductProperties {
 	
 	/**
 	 * 생성될때 루트 경로를 저장하고 있을 String 형 변수입니다.
@@ -39,10 +39,10 @@ public class ReadProperties {
 	
 	/**
 	 * 파라미터로 경로를 받아 rootPath에 저장합니다
-	 * @param path
+	 * @param inputPath
 	 */
-	public ReadProperties(String path) {
-		this.rootPath = path;
+	public ProductProperties(String inputPath) {
+		this.rootPath = inputPath;
 	}
 	
 	/**
@@ -109,6 +109,7 @@ public class ReadProperties {
 						pathStringBuilder.append("-");
 						pathStringBuilder.append(entry.getName());
 						
+						//key set을 가지고와 key들을 하나하나 Parameter에 옮깁니다.
 						properties.keySet();
 						for(Object obj : properties.keySet()){
 							String key = (String)obj;
@@ -149,7 +150,6 @@ public class ReadProperties {
 	 * @param file
 	 */
 	private void readFileAndClassifyParameter(File file) { 
-		
 		InputStream is = null;
 		Properties properties = null;
 		try{

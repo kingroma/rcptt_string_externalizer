@@ -14,7 +14,8 @@ public class Logger {
 	}
 	
 	/**
-	 * 내용 남기기
+	 * 내용을 출력하거나
+	 * log 파일에 담습니다.
 	 * @param text
 	 */
 	public static void write(String text) {

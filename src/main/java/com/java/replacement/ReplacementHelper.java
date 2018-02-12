@@ -51,7 +51,7 @@ public class ReplacementHelper {
 	 * 1차 치환이 종료된 후 2차 치환시 그 문자열이 경로 형식의 문자열인지
 	 * 아닌지 확인하는 정규식 표현입니다.
 	 */
-	private static final String PATH_REGEX = "^[a-zA-Z]:\\\\.*[a-zA-Z]"; // 1차 치환이 종료된 후 2차 치환시 그 문자열이 path인지 아닌지 확인하는 정규식입니다.
+	private static final String PATH_REGEX = "^[a-zA-Z]:\\\\.*[a-zA-Z0-9가-힣]"; // 1차 치환이 종료된 후 2차 치환시 그 문자열이 path인지 아닌지 확인하는 정규식입니다.
 
 	/**
 	 * 확장자명을 담고있는 properties의 파일 이름입니다.
@@ -82,7 +82,7 @@ public class ReplacementHelper {
 		for(RObject rObj : ProgramData.getInstance().getProject().getObjects()){
 			String eclScript = rObj.getEclScript();
 
-			if(eclScript != null && !eclScript.equals("")){
+			if(eclScript != null && eclScript.length()>0){
 				rObj.setECLCode(this.replceCheck(eclScript));
 
 				if(needSave){
@@ -111,13 +111,13 @@ public class ReplacementHelper {
 	 * -> 확장자가 프로젝트 관련일경우 새로운 파라미터를 추가 합니다.
 	 * -> format 형식으로 치환이 가능한지 확인 후 변환 합니다.
 	 * </pre>
-	 * @param str
+	 * @param inputString
 	 * @return
 	 */
-	private String replceCheck(String str) {
+	private String replceCheck(String inputString) {
 		try {
 			StringBuilder returnStringBuilder = new StringBuilder(); // 한 라인씩 확인하면서 라인의 내용을 담을 string builder 이며 이 변수를 반환합니다.
-			BufferedReader reader = new BufferedReader(new StringReader(str));
+			BufferedReader reader = new BufferedReader(new StringReader(inputString));
 			String currentLine = null;
 
 			String newLine = "\n";
@@ -138,7 +138,7 @@ public class ReplacementHelper {
 						if(!isKeyLine) {
 							isKeyLine = true; // 현재 문자열 시작 부분으로 flag를 true시켜줍니다.
 						}else {
-							if((currentLine.length() > 0) && (previousChar == '\\') ) {
+							if(previousChar == '\\') {
 								// \" 이런 경우가 있으므로 그것을 피하기 위함 입니다.
 								keyStringBuilder.append(currentChar);
 							}else {
@@ -151,11 +151,11 @@ public class ReplacementHelper {
 										currentLine = currentLine.replace("\""+keyStringBuilder+"\"" , output);//치환된 부분을 변경합니다.
 
 										//첫시작이 $key 인경우 RCPTT 에서는 에러가 발생하여 그것을 없애주기 위한 if 문입니다.
-										if(preLineStringBuilder.toString().equals("\t")){
-											if(returnStringBuilder.charAt(returnStringBuilder.length()-1)=='\n'){
-												returnStringBuilder.deleteCharAt(returnStringBuilder.length()-1);
-											}
-										}
+//										if(preLineStringBuilder.toString().trim().length()==0){//trim 으로 앞 문자열이 공백인경우 앞의 라인의 \n을 제거합니다.
+//											if(returnStringBuilder.charAt(returnStringBuilder.length()-1)=='\n'){
+//												returnStringBuilder.deleteCharAt(returnStringBuilder.length()-1);
+//											}
+//										}
 									}
 									else {//처음 치환이 안 이러우졌을 경우 2차 치환을 진행합니다.
 										output = this.findNewKey(keyStringBuilder.toString());
@@ -193,8 +193,8 @@ public class ReplacementHelper {
 
 			return returnStringBuilder.toString();
 		} catch (IOException e) {
-			System.out.println("substitution err");
-			return str;
+			Logger.write("substitution err");
+			return inputString;
 		}
 
 
@@ -235,7 +235,9 @@ public class ReplacementHelper {
 
 		/**
 		 * key가 경로파일인 경우를 확인합니다
-		 * C:\\ 같은 경우를 기준으로합니다. 
+		 * C:\\ 같은 경우를 기준으로합니다.
+		 * 정규식 : ^[a-zA-Z]:\\\\.*[a-zA-Z0-9가-힣]
+		 * 1차 치환이 종료된 후 2차 치환시 그 문자열이 path인지 아닌지 확인하는 정규식입니다. 
 		 */
 		if(Pattern.matches(PATH_REGEX, key)){
 			String validationKey = ParameterValidation.getValidationKey("path_"+key);
