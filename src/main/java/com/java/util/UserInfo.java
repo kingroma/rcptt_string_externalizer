@@ -107,6 +107,11 @@ public class UserInfo {
 		
 	}
 	
+	/**
+	 * Get Set
+	 * @param key
+	 * @return
+	 */
 	private String getiniInfo(String key){
 		return iniInfoMap.get(key);
 	}

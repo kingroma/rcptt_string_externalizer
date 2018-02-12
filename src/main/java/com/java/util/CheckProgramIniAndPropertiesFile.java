@@ -7,12 +7,33 @@ import java.util.ArrayList;
 
 /**
  * 하드코딩이 들어가있습니다.
+ * 파일이 없을경우 help 내용을 추가하여 
+ * 파일을 생성하는 클래스입니다.
+ * 
+ * 생성해야할 파일은
+ *  1. defaultparameter.properties 
+ *   >>  properties에서 확인되지 않은 key값을 사용자가 추가
+ *   
+ *  2. extensionList.properties 
+ *   >> *.확장자 를 담고있는 파일이며 치환시 extensionList에 있는 key와 RCPTT의 문자열이 동일할경우 치환을 합니다.
+ *  
+ *  3. rcptt++.ini
+ *   >> 기본적인 경로를 담을 파일입니다 ( RCPTT project 경로 , parameterCtx 파일 경로 , CT 파일 경로  )
+ *   
  * @author suresoft
  *
  */
 public class CheckProgramIniAndPropertiesFile {
 
+	/**
+	 * ini 파일에 들어갈 기본 핼프 내용입니다.
+	 * settingStringBuilder() 호출을 통하여 생성됩니다.
+	 */
 	private static StringBuilder iniHelpText;
+	
+	/**
+	 * defaultParameter 파일에 들어갈 기본 헬프 내용입니다. 
+	 */
 	private static StringBuilder defaultParameterHelpText;
 	private static StringBuilder extensionListHelpText;
 	private static ArrayList<String> nameList;	
@@ -22,6 +43,13 @@ public class CheckProgramIniAndPropertiesFile {
 	private CheckProgramIniAndPropertiesFile(){
 	}
 	
+	/**
+	 * extensionList 파일 과
+	 * defaultParameter 파일 과 
+	 * ini 파일이 존재하는지 확인하는 과정입니다.
+	 *  
+	 * @return
+	 */
 	public static boolean createFile(){
 		settingStringBuilder();
 		
@@ -70,8 +98,13 @@ public class CheckProgramIniAndPropertiesFile {
 		}
 	}
 	
-//	defaultParameterHelpText
-//	.extensionListHelpText
+	/**
+	 * -help 를 입력시 텍스트 내용을 새팅합니다.
+	 * 1. ini 파일 
+	 * 2. defaultParameter.properties 파일
+	 * 3. extensionList.properties 파일 
+	 * 이 3가지의 설명을 담고있습니다. 
+	 */
 	private static void settingStringBuilder(){
 		iniHelpText = new StringBuilder();
 		

@@ -16,19 +16,29 @@ package com.java.util;
  */
 public class Converter {
 	
-	private static StringBuilder converterStringBuilder = null; // 문자열을 저장하고 있는 변수
-	private static char currentChar; // 문자열중 한개를 확인할 변수
+	/**
+	 * 문자열을 저장하고 있을 변수입니다.
+	 */
+	private static StringBuilder converterStringBuilder = null;
+	
+	/**
+	 * 문자열을 한글자씩 확인하고 있을 변수입니다.
+	 */
+	private static char currentChar;
+	
+	/**
+	 * 문자열의 hex값입니다.
+	 */
 	private static String hex; // 문자의 hex 값
 	
-	private  Converter() {
-		iniEnv();
-	}
+	private  Converter() { }
 	
-	public void iniEnv(){
-		
-	}
-	
-	//한국어를 유니코드로
+
+	/**
+	 * 한국어를 유니코드로 변경하는 메소드입니다.
+	 * @param korean
+	 * @return
+	 */
 	public static String convertKoreanToUnicode(String korean) {
 		converterStringBuilder = new StringBuilder();
 		for (int i = 0; i < korean.length(); i++) {
@@ -49,7 +59,11 @@ public class Converter {
 		return converterStringBuilder.toString();
 	}
 	
-	//유니코드를 한국어로
+	/**
+	 * 유니코드를 한국어로 변경하는 메소드입니다.
+	 * @param unicode
+	 * @return
+	 */
 	public static String convertUnicodeToKorean(String unicode) {
 		converterStringBuilder = new StringBuilder();
 		int len = unicode.length();

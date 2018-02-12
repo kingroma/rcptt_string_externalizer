@@ -10,7 +10,6 @@ import com.java.util.CheckProgramIniAndPropertiesFile;
  * rcptt++
  * </pre>
  * @author 김정진 인턴 / 정성일 선임님
- * 기본 찾아보기
  */
 public class Main {
 	// TODO 다 확인하고 나서 . 
@@ -22,8 +21,16 @@ public class Main {
 	
 	// TODO [RCPTT API 적용이 가능하면 상관없음] 이거 하나로 묶어서 진행할 수 있게 해보기
 	
+	// TODO 월요일 추가적으로 주석 자세하게 달기
+	
+//	0402
+//	0404
+//	0408
+//	0411
+	
+	
 	/**
-	 * 메인 프로그램 루트
+	 * 메인 프로그램 시작 루트 
 	 * @param args
 	 */
 	public static void main(String[] args) {

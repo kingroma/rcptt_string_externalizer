@@ -54,6 +54,62 @@ public class ProgramData {
 		return INSTANCE;
 	}
 	
+	/**
+	 * 파라미터를 추가하는 메소드입니다.
+	 * key 와 value의 유효성 검사 후 추가를 합니다.
+	 * @param key
+	 * @param value
+	 */
+	public void addParameter(String key, String value){
+		key = ParameterValidation.getValidationKey(key);
+		value = Converter.convertUnicodeToKorean(ParameterValidation.getValidationValue(value));
+		
+		if(valueChecker(value)){
+			parameterMap.put(value , key);
+		}
+	}
+	
+	/**
+	 * 파라미터를 추가할 시 
+	 * 경로내용을 key에 추가하기 위하여 path 인자도 같이 받는경우입니다.
+	 * @param key
+	 * @param value
+	 * @param path
+	 */
+	public void addParameter(String key , String value , String path){
+		key = ParameterValidation.getValidationPath(path)+"_"+ParameterValidation.getValidationKey(key);
+		value = Converter.convertUnicodeToKorean(ParameterValidation.getValidationValue(value));
+		
+		if(valueChecker(value)){
+			parameterMap.put(value , key);
+		}
+		
+	}
+	
+	/**
+	 * 파라미터 맵에서 동일한 value를 가진 키를 반환합니다.
+	 * 없을 경우 null을 반환합니다.
+	 * @param value
+	 * @return
+	 */
+	public String searchKey(String value){
+		//parameterMap에서는 한글로 가지고 있습니다.
+		return parameterMap.get(Converter.convertUnicodeToKorean(value));
+	}
+	
+	/**
+	 * ' ' (스페이스) 와 '\\' 의 value를 가진 키를 없애기 위하여 입니다.
+	 * @param str
+	 * @return
+	 */
+	private boolean valueChecker(String str){
+		return (!str.equals("") && !str.equals("\\"));
+	}
+	
+	/**
+	 * Get Set
+	 * @return
+	 */
 	public RcpttProject getProject() {
 		return project;
 	}
@@ -73,38 +129,4 @@ public class ProgramData {
 	public HashMap<String, String> getParameterMap() {
 		return parameterMap;
 	}
-
-	
-	public void addParameter(String key, String value){
-		key = ParameterValidation.getValidationKey(key);
-		value = Converter.convertUnicodeToKorean(ParameterValidation.getValidationValue(value));
-		
-		if(valueChecker(value)){
-			parameterMap.put(value , key);
-		}
-	}
-	
-	public void addParameter(String key , String value , String path){
-		key = ParameterValidation.getValidationPath(path)+"_"+ParameterValidation.getValidationKey(key);
-		value = Converter.convertUnicodeToKorean(ParameterValidation.getValidationValue(value));
-		
-		if(valueChecker(value)){
-			parameterMap.put(value , key);
-		}
-		
-	}
-	
-	public String searchKey(String value){
-		//parameterMap에서는 한글로 가지고 있습니다.
-		return parameterMap.get(Converter.convertUnicodeToKorean(value));
-	}
-	
-	private boolean valueChecker(String str){
-		return (!str.equals("") && !str.equals("\\"));
-	}
-
-
-	
-	
-	
 }	

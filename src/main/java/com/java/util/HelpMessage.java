@@ -21,7 +21,7 @@ public class HelpMessage {
 	}
 	
 	/**
-	 * msg 내용을 출력합니다.
+	 * messsage의 내용을 출력합니다.
 	 */
 	public void msg(){
 		Logger.write(helpMessageStringBuilder.toString());
