@@ -2,6 +2,7 @@ package com.java.main;
 
 import com.java.controller.Controller;
 import com.java.util.HelpMessage;
+import com.java.util.UserInputData;
 import com.java.util.CheckProgramIniAndPropertiesFile;
 
 /**0  /
@@ -19,14 +20,29 @@ public class Main {
 	// 2. 메인빌드 하면 ini 파일하나랑 그외 파일 외부화된것이랑 exe랑 같이 올라오게 .
 	// 3. 결과물이 허드슨에 붙였을때 정상 작동하는지 확인해야함
 	
+	// TODO junit test 만들기 . 
 	/**
 	 * 메인 프로그램 시작 루트 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if(CheckProgramIniAndPropertiesFile.createFile()){
+		Controller controller = null;
+
+		
+		if(args.length==4){
+			UserInputData.getInstanceNoIniEnv();
+			UserInputData.Language = args[0];
+			UserInputData.CTPath = args[1];
+			UserInputData.ProjectPath = args[2];
+			UserInputData.ParameterCtxPath = args[3];
+			
+			controller = new Controller();
+			controller.process();
+		}
+		else if(CheckProgramIniAndPropertiesFile.createFile()){
 			if(args.length==0) {
-				Controller controller = new Controller();
+				UserInputData.getInstance();
+				controller = new Controller();
 				controller.process();
 			}
 			else if(args[0].equals("-help")) {

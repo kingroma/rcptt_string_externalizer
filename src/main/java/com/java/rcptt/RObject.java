@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
+import com.java.util.ErrorMessage;
 import com.java.util.Logger;
 import com.java.util.ProgramData;
 
@@ -133,7 +134,7 @@ public class RObject {
 
 			reader.close();
 		} catch (IOException exception) {
-			Logger.write("readForm err");
+			ErrorMessage.getInstance().printErrorMessage("ROject.readform.error");
 		}finally{
 			try {
 				if(fis!=null){
@@ -147,7 +148,7 @@ public class RObject {
 				}
 
 			} catch (IOException exception2) {
-				Logger.write("read Form clsose erro");
+				ErrorMessage.getInstance().printErrorMessage("ROject.close.inputstream.error");
 			}
 		}
 
@@ -237,7 +238,7 @@ public class RObject {
 			reader.close();
 
 		}catch(IOException exception) {
-			Logger.write("readContent err");
+			ErrorMessage.getInstance().printErrorMessage("ROject.readcontent.error");
 		}
 	}
 
@@ -333,13 +334,13 @@ public class RObject {
 			osw.close();
 
 		}catch(IOException exception) {
-			Logger.write("save error");
+			ErrorMessage.getInstance().printErrorMessage("RObject.save.error");
 		}finally{
 			try {
 				if(fos!=null)
 					fos.close();
 			} catch (IOException exception2) {
-				Logger.write("save error");
+				ErrorMessage.getInstance().printErrorMessage("RObject.close.inputstream.error");
 			}
 		}
 	}

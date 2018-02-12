@@ -13,9 +13,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
+import com.java.util.ErrorMessage;
 import com.java.util.Logger;
 import com.java.util.ProgramData;
-import com.java.util.UserInfo;
+import com.java.util.UserInputData;
 
 
 /**
@@ -55,7 +56,7 @@ public class ProductProperties {
 		        .filter(Files::isRegularFile)
 		    	.forEach(this::isPropertiesOrJar);
 		} catch (IOException exception) {
-			Logger.write("properties read error");
+			ErrorMessage.getInstance().printErrorMessage("ProductProperties.read.properties.error");
 		}
 		Logger.write(" CT경로에서 찾은 .properties의 갯수 : "+propertiesFileCount); // 몇개의 properties 파일을 읽었는지 출력합니다.
 	}
@@ -116,26 +117,26 @@ public class ProductProperties {
 							ProgramData.getInstance().addParameter(key , properties.getProperty(key) , pathStringBuilder.toString());
 						}
 					}catch(IOException exception){
-						Logger.write("read properties error");
+						ErrorMessage.getInstance().printErrorMessage("ProductProperties.readJar.properties.error");
 					}finally{
 						try {
 							if(is!=null)
 								is.close();
 						} catch (IOException exception2) {
-							Logger.write("read properties error");
+							ErrorMessage.getInstance().printErrorMessage("ProductProperties.close.inputstream.error");
 						}
 					}
 				}
 			}
 		}catch(IOException exception) {
-			Logger.write("readJarFileClassifyParameter error");
+			ErrorMessage.getInstance().printErrorMessage("ProductProperties.read.Jar.error");
 		}finally{
 			try {
 				if(jarFile!=null){
 					jarFile.close();
 				}
 			} catch (IOException exception2) {
-				Logger.write("readJarFileClassifyParameter jarFile close error");
+				ErrorMessage.getInstance().printErrorMessage("ProductProperties.closeJar.inputstream.error");
 			}
 			
 		}
@@ -164,13 +165,13 @@ public class ProductProperties {
 			}
 			
 		}catch(IOException exception){
-			Logger.write("error read file and classify parameter error");
+			ErrorMessage.getInstance().printErrorMessage("ProductProperties.read.properties.error");
 		}finally{
 			try {
 				if(is!=null)
 					is.close();
 			} catch (IOException exception2) {
-				Logger.write("error read file and classify parameter FileInputStream close error");
+				ErrorMessage.getInstance().printErrorMessage("ProductProperties.close.inputstream.error");
 			}
 		}
 		
@@ -196,7 +197,7 @@ public class ProductProperties {
 	 * @return
 	 */
 	private boolean isContainsLanguage(String path) {
-		return (UserInfo.getInstance().getLanguage().length()==0) || (path.contains(UserInfo.getInstance().getLanguage()));
+		return (UserInputData.Language.length()==0) || (path.contains(UserInputData.Language));
 	}
 	
 	/**

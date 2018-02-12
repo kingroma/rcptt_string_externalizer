@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -28,44 +29,73 @@ import java.util.Properties;
  * @author suresoft
  *
  */
-public class UserInfo {
-	
+public class UserInputData {	
 	/**
 	 * UserInfo 변수를 가지고 있을 INSTANCE 입니다.
 	 */
-	private static UserInfo INSTANCE;
+	private static UserInputData INSTANCE;
 	
 	/**
 	 * rcptt++.ini 파일의 이름을 UserData에서 가지고 있습니다.
 	 */
-	private String iniFileName = "rcptt++.ini";
+	public static String iniFileName = "rcptt++.ini";
+	
+	/**
+	 * rcptt++.ini 파일에서 language 내용을 담고있을 String 형 변수입니다.
+	 */
+	public static String Language;
+	
+	/**
+	 * rcptt++.ini  파일에서 parameter ctx path 내용을 담고 있을 String 형 변수입니다
+	 */
+	public static String ParameterCtxPath;
+	
+	/**
+	 * rcptt++.ini  파일에서 CT 제품의 path 내용을 담고 있을 String 형 변수입니다
+	 */
+	public static String CTPath;
+	
+	/**
+	 * rcptt++.ini  파일에서 RCPTT project path 내용을 담고 있을 String 형 변수입니다
+	 */
+	public static String ProjectPath;
+	
 	
 	/**
 	 * rcptt++.ini에서 읽어온 정보들을 map형식으로 가지고 있습니다.
 	 * get 으로 반환 가능합니다.
 	 */
-	private HashMap<String, String> iniInfoMap;
+	private Map<String, String> iniInfoMap;
 	
 	/**
 	 * UserInfo 생성과 동시에 infoEnv() 메소드 호출합니다.
 	 */
-	private UserInfo() {
-		initEnv();
+	
+	private UserInputData(boolean bool) {
+		if(!bool){
+			initEnv();
+		}
 	}
-
 	/**
 	 * Instance를 반환하며 
 	 * Instance == null 일경우 새로 생성 
 	 * @return
 	 */
-	public static UserInfo getInstance() {
+	public static UserInputData getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = new UserInfo();
+			INSTANCE = new UserInputData(false);
 		}
 
 		return INSTANCE;
 	}
+	
+	public static UserInputData getInstanceNoIniEnv(){
+		if (INSTANCE == null) {
+			INSTANCE = new UserInputData(true);
+		}
 
+		return INSTANCE;
+	}
 
 	/**
 	 * UserInfo 생성이 되었을때 ini 파일을 읽기 위하여 
@@ -91,18 +121,22 @@ public class UserInfo {
 					iniInfoMap.put(key, p.getProperty(key));
 				}
 			} catch (IOException exception) {
-				Logger.write("UserInfo read properties Error");
+				ErrorMessage.getInstance().printErrorMessage("UserInfoData.read.properties.error");
 			}finally{
 				try {
 					if(is!=null)
 						is.close();
 					p = null;
 				} catch (IOException exception2) {
-					Logger.write("UserInfo read properties Error");
+					ErrorMessage.getInstance().printErrorMessage("UserInfoData.read.properties.error");
 				}
 			}
 		}
 		
+		Language = searchIniInfo("Language");
+		ProjectPath = searchIniInfo("ProjectPath");
+		ParameterCtxPath = searchIniInfo("ParameterCtxPath");
+		CTPath = searchIniInfo("CodeScrollFilePath");
 	}
 	
 	/**
@@ -114,25 +148,4 @@ public class UserInfo {
 		return iniInfoMap.get(key);
 	}
 
-	public String getLanguage() {
-		return searchIniInfo("Language");
-	}
-
-	public String getCTPath() {
-		return searchIniInfo("CodeScrollFilePath");
-	}
-
-	public String getProjectPath() {
-		return searchIniInfo("ProjectPath");
-	}
-
-	public String getParameterCtxPath() {
-		return searchIniInfo("ParameterCtxPath");
-	}
-
-	public String getIniFileName() {
-		return iniFileName;
-	}
-
-	
 }

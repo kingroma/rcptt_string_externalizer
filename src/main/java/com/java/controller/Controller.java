@@ -15,7 +15,7 @@ import com.java.util.Converter;
 import com.java.util.Logger;
 import com.java.util.MyTimer;
 import com.java.util.ProgramData;
-import com.java.util.UserInfo;
+import com.java.util.UserInputData;
 
 
 /**
@@ -45,15 +45,12 @@ public class Controller {
 	 */
 	private RObject parameterCtx;
 
-
-
 	/**
 	 * process 의 시작을 하는 메소드입니다.
 	 * 생성 후 process 메소드를 호출해야지 실행이 됩니다.
 	 */
 	public void process() {
 		mainTimer.start();
-
 		Logger.write("rcptt 문자열 스크립트 자동 치환 시스템 시작");
 		Logger.write("");
 
@@ -97,9 +94,9 @@ public class Controller {
 	 * @see Parameter
 	 */
 	private void readParameterCtx() { // process 1
-		Logger.write("\nprocess 1 \n read prameter ctx file \n " + UserInfo.getInstance().getParameterCtxPath());
+		Logger.write("\nprocess 1 \n read prameter ctx file \n " + UserInputData.ParameterCtxPath);
 
-		parameterCtx= new RObject(UserInfo.getInstance().getParameterCtxPath());
+		parameterCtx= new RObject(UserInputData.ParameterCtxPath);
 		
 	}
 
@@ -114,9 +111,9 @@ public class Controller {
 	 *
 	 */
 	private void readProperties() {
-		Logger.write("\nprocess 2 \n read properties file \n " + UserInfo.getInstance().getCTPath());
+		Logger.write("\nprocess 2 \n read properties file \n " + UserInputData.CTPath);
 
-		ProductProperties productProperties = new ProductProperties(UserInfo.getInstance().getCTPath()); // Property property
+		ProductProperties productProperties = new ProductProperties(UserInputData.CTPath); // Property property
 		productProperties.read();
 	}
 
@@ -131,7 +128,7 @@ public class Controller {
 	 * @see __Project
 	 */
 	private void readProject() {
-		String projectPath = UserInfo.getInstance().getProjectPath();
+		String projectPath = UserInputData.ProjectPath;
 		Logger.write("\nprocess 3\n read RCPTT project folder\n " + projectPath);
 		RcpttProject rcpttPrj = new RcpttProject(projectPath);
 		ProgramData.getInstance().setProject(rcpttPrj);

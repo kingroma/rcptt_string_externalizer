@@ -2,7 +2,7 @@ package com.java.parameter;
 
 import java.util.regex.Pattern;
 
-import com.java.util.UserInfo;
+import com.java.util.UserInputData;
 
 /**
  * ProgramData 클래스에 Parameter를 넣을때
@@ -79,7 +79,7 @@ public class ParameterValidation {
 	 */
 	public static String getValidationPath(String path){
 
-		path = path.substring(UserInfo.getInstance().getCTPath().length()+1, path.length());
+		path = path.substring(UserInputData.CTPath.length()+1, path.length());
 
 		path = removeVersion(path);
 

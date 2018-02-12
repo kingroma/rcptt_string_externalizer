@@ -55,7 +55,7 @@ public class CheckProgramIniAndPropertiesFile {
 		
 		nameList = new ArrayList<String>();
 		
-		nameList.add(UserInfo.getInstance().getIniFileName());
+		nameList.add(UserInputData.iniFileName);
 		nameList.add(defaultParameterFilename);
 		nameList.add(extensionListFileName);
 		
@@ -69,7 +69,7 @@ public class CheckProgramIniAndPropertiesFile {
 				try {
 					fos = new FileOutputStream(file);
 					
-					if(path.equals(UserInfo.getInstance().getIniFileName())){
+					if(path.equals(UserInputData.iniFileName)){
 						fos.write(iniHelpText.toString().getBytes());
 					}else if(path.equals(defaultParameterFilename)){
 						fos.write(Converter.convertKoreanToUnicode(defaultParameterHelpText.toString()).getBytes());
@@ -78,14 +78,14 @@ public class CheckProgramIniAndPropertiesFile {
 					}
 					
 				} catch (IOException exception) {
-					Logger.write("create program ini file and properties file error");
+					ErrorMessage.getInstance().printErrorMessage("CheckProgramIniAndPropertiesFile.IO.error");
 				}finally{
 					try {
 						if(fos!=null){
 							fos.close();
 						}
 					} catch (IOException exception2) {
-						Logger.write("create program ini file and properties file error");
+						ErrorMessage.getInstance().printErrorMessage("CheckProgramIniAndPropertiesFile.IO.error");
 					}
 				}
 			}

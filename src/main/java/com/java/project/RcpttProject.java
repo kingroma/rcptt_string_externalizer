@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import com.java.rcptt.RObject;
+import com.java.util.ErrorMessage;
 import com.java.util.Logger;
-import com.java.util.UserInfo;
+import com.java.util.UserInputData;
 
 /**
  * <b>Project</b>
@@ -54,7 +55,7 @@ public class RcpttProject {
 		        .filter(Files::isRegularFile)
 		    	.forEach(this::setRObject);
 		} catch (IOException exception) {
-			Logger.write("properties read error");
+			ErrorMessage.getInstance().printErrorMessage("RcpttProject.read.properties.error");
 		}
 	}
 
@@ -76,7 +77,7 @@ public class RcpttProject {
 	 * @return
 	 */
 	private boolean isParameterCtxFile(File file){
-		return file.getAbsolutePath().equals(UserInfo.getInstance().getParameterCtxPath());
+		return file.getAbsolutePath().equals(UserInputData.ParameterCtxPath);
 	}
 	
 	/**

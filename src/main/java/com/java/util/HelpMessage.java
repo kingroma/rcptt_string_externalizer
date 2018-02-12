@@ -69,6 +69,17 @@ public class HelpMessage {
 		
 		helpMessageStringBuilder.append(term);
 		
+		helpMessageStringBuilder.append("프로그램 실행시 인자로 받을 경우엔\n");
+		helpMessageStringBuilder.append("\n");
+		helpMessageStringBuilder.append("1. language\n");
+		helpMessageStringBuilder.append("2. CodeScrollFilePath\n");
+		helpMessageStringBuilder.append("3. ProjectPath\n");
+		helpMessageStringBuilder.append("4. ParameterCtxPath\n");
+		helpMessageStringBuilder.append("순서대로 입력해주셔야 합니다.\n");
+		helpMessageStringBuilder.append("\n");
+		
+		helpMessageStringBuilder.append(term);
+		
 		helpMessageStringBuilder.append("#-- RCPTT++ 자동화 프로세스 동작 순서\n");
 		helpMessageStringBuilder.append("1. properties 파일 읽어오기\n");
 		helpMessageStringBuilder.append("2. 파라미터가 들어있는 ctx파일 읽어오기\n");

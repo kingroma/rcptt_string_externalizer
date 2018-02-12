@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import com.java.parameter.ParameterValidation;
 import com.java.rcptt.RObject;
+import com.java.util.ErrorMessage;
 import com.java.util.Logger;
 import com.java.util.ProgramData;
 
@@ -193,7 +194,7 @@ public class ReplacementHelper {
 
 			return returnStringBuilder.toString();
 		} catch (IOException e) {
-			Logger.write("substitution err");
+			ErrorMessage.getInstance().printErrorMessage("ReplacementHelper.replace.error");
 			return inputString;
 		}
 
@@ -348,7 +349,7 @@ public class ReplacementHelper {
 				}
 				is.close();
 			} catch (IOException e) {
-				Logger.write("read defaultParameter.properties error");
+				ErrorMessage.getInstance().printErrorMessage("ReplacementHelper.read.defaultParameter.error");
 			}
 		}else{
 			Logger.write("create defaultparameter.properties");
@@ -359,13 +360,13 @@ public class ReplacementHelper {
 				fos.close();
 
 			} catch (IOException exception) {
-				Logger.write("read defaultParameter.properties output stream error");
+				ErrorMessage.getInstance().printErrorMessage("ReplacementHelper.read.defaultParameter.error");
 			}finally{
 				try {
 					if(fos!=null)
 						fos.close();
 				} catch (IOException exception2) {
-					Logger.write("read defaultParameter.properties output stream error");
+					ErrorMessage.getInstance().printErrorMessage("ReplacementHelper.read.defaultParameter.error");
 				}
 			}
 		}
