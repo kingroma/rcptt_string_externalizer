@@ -10,7 +10,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import com.java.util.ErrorMessage;
-import com.java.util.Logger;
 import com.java.util.ProgramData;
 
 /*

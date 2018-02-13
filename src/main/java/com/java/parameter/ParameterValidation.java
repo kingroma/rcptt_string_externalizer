@@ -25,7 +25,7 @@ public class ParameterValidation {
 	 * plugins|plugin|.Alpha|.properties|_ko_KR|_ko
 	 * 가 있을경우 제거하기 위함 입니다.
 	 */
-	private static final String KEY_REMOVE_REGEX = "plugins|plugin|.Alpha|.properties|_ko_KR|_ko";
+	private static final String KEY_REMOVE_REGEX = "plugins|plugin|.Alpha|.properties|_ko_KR|_ko|properties";
 	
 	/**
 	 * \\ | / 를 제거하기 위함입니다. 제거시 ' . ' 으로 변경합니다.

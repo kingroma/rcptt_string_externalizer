@@ -371,4 +371,28 @@ public class ReplacementHelper {
 			}
 		}
 	}
+	
+
+
+	public int getRcpttValueAmount() {
+		return rcpttValueAmount;
+	}
+
+
+	public void setRcpttValueAmount(int rcpttValueAmount) {
+		this.rcpttValueAmount = rcpttValueAmount;
+	}
+
+
+	public int getReplaceCount() {
+		return replaceCount;
+	}
+
+
+	public void setReplaceCount(int replaceCount) {
+		this.replaceCount = replaceCount;
+	}
+	
+	
+	
 }

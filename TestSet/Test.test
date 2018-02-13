@@ -14,6 +14,7 @@ Testcase-Type: ecl
 Content-Type: text/ecl
 Entry-Name: .content
 
-$
+get-button $rcptt "suresofttech"
+
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
