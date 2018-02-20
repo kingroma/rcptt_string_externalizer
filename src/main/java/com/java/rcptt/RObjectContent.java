@@ -2,8 +2,13 @@ package com.java.rcptt;
 
 
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import com.java.util.Converter;
 import com.java.util.ProgramData;
+import com.java.util.UserInputData;
 
 /**
  * <pre>
@@ -12,7 +17,6 @@ import com.java.util.ProgramData;
  * 만약 RCPTT API 를 사용 가능하게 될 경우
  * 변경 예정입니다.
  * @author suresoft
- *
  */
 public class RObjectContent {
 	/**
@@ -20,7 +24,7 @@ public class RObjectContent {
 	* 추후 확인되는 RCPTT API 있을경우 변경 예정입니다.
 	* (하드코딩) 
 	*/
-
+	
 	private String startLine ;
 	private String contentType ;
 	private String entryName ;
@@ -28,12 +32,7 @@ public class RObjectContent {
 	private String endLine;
 	private RcpttResourceType type;
 	private boolean isParameter;
-
-
-
-	//------=_.parameters.context-2e023de5-3294-36a9-ac1d-6701f05a40ee
-	//Content-Type: text/properties
-	//Entry-Name: .parameters.context
+	private String path;
 
 	/**
 	 * 생성되었을때 그대로 변수를 저장합니다.
@@ -52,10 +51,32 @@ public class RObjectContent {
 		this.endLine = end_line;
 		this.isParameter = isParameter;
 		this.setType();
-
+		
+	}
+	
+	/**
+	 * 파라미터의 경로를 확인하기 위하여 생성자를 2개로 받았습니다.
+	 * 필요없는경우 위의 생성자로 생성이 됩니다.
+	 * @param start_line
+	 * @param content_type
+	 * @param entry_name
+	 * @param text
+	 * @param end_line
+	 * @param isParameter
+	 * @param path
+	 */
+	public RObjectContent(String start_line , String content_type , String entry_name , String text , String end_line, boolean isParameter,String path) {
+		this.startLine = start_line;
+		this.contentType = content_type;
+		this.entryName = entry_name;
+		this.text = text;
+		this.endLine = end_line;
+		this.isParameter = isParameter;
+		this.setType();
+		this.path = path;
 	}
 
-
+	
 	/**
 	 * RObject에서 저장할때 ( save() ) content의 포멧대로
 	 * String 값을 반환하는 메소드입니다.
@@ -74,20 +95,46 @@ public class RObjectContent {
 
 
 		if(isParameter) { // 만약에 이 오브젝트가 parameter인경우  파라미터의 정보를 담는다.
-			outputStringBuilder.append(newLine);
-
-			for(Object obj : ProgramData.getInstance().getParameterMap().keySet()){
-				String key = (String)obj;
-				String value = ProgramData.getInstance().searchKey(key);
-
-				if(value!=null){
-					outputStringBuilder.append(value);
-					outputStringBuilder.append("=");
-					outputStringBuilder.append(Converter.convertKoreanToUnicode(key));
-					outputStringBuilder.append(newLine);
+			if(this.path.equals(UserInputData.ParameterCtxPath)){
+				outputStringBuilder.append(newLine);
+				
+				for(Object obj : ProgramData.getInstance().getParameterMap().keySet()){
+					String key = (String)obj;
+					String value = ProgramData.getInstance().searchKey(key);
+	
+					if(value!=null){
+						outputStringBuilder.append(value);
+						outputStringBuilder.append("=");
+						outputStringBuilder.append(Converter.convertKoreanToUnicode(key));
+						outputStringBuilder.append(newLine);
+					}
 				}
+				outputStringBuilder.append(newLine);
+			}else if(this.path.equals(UserInputData.ParameterCtxEnPath)){
+				outputStringBuilder.append(newLine);
+				
+				Map<String,String> param = ProgramData.getInstance().getParameterMap();
+				Map<String,String> param2 = ProgramData.getInstance().getParameterMapEn();
+				Map<String,String> saveParameter = new HashMap<String,String>();
+				Set<String> keys = param.keySet();
+				for(String k : keys){
+					String str = param.get(k);
+					String str2 = param2.get(str.replace(".nl", ""));
+					
+					if(str2!=null){
+						saveParameter.put(str,str2);
+					}
+				}
+				for(String temp : saveParameter.keySet()){
+					outputStringBuilder.append(temp);
+					outputStringBuilder.append("=");
+					outputStringBuilder.append(saveParameter.get(temp));
+					outputStringBuilder.append("\n");
+				}
+				
+				
+				outputStringBuilder.append(newLine);
 			}
-			outputStringBuilder.append(newLine);
 		}else { // 파라미터 정보가아닐경우 eclscript, testcase 인경우
 			outputStringBuilder.append(text);
 		}
@@ -97,7 +144,7 @@ public class RObjectContent {
 
 		return outputStringBuilder.toString();
 	}
-
+	
 	/**
 	* content의 타입을 결정하며
 	* enum 을 사용하여 정합니다.
@@ -105,17 +152,13 @@ public class RObjectContent {
 	*										TYPE_TESTCASE   TYPE_PARAMETER  TYPE_ECL  TYPE_DESCRIPTION
 	*/
 	private void setType() {
-		//ecl 인경우
-		if (this.contentType.equals("Content-Type: text/ecl")) {
+		if (this.contentType.equals("Content-Type: text/ecl")) { // ecl 인경우
 			this.type = RcpttResourceType.ECL;
 		}
-		// description 인경우
-		else if (this.contentType.equals("Content-Type: text/plain")) {
+		else if (this.contentType.equals("Content-Type: text/plain")) { // description 인경우
 			this.type = RcpttResourceType.DESCRIPTION;
 		}
-
-		// parameter 인경우
-		else if (this.contentType.equals("Content-Type: text/properties")) {
+		else if (this.contentType.equals("Content-Type: text/properties")) { // parameter 인경우
 			this.type = RcpttResourceType.PARAMETER;
 		}
 	}
@@ -180,6 +223,12 @@ public class RObjectContent {
 
 	public void setType(RcpttResourceType type) {
 		this.type = type;
+	}
+	public String getPath() {
+		return path;
+	}
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 

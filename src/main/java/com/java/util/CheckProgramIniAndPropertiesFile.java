@@ -34,12 +34,20 @@ public class CheckProgramIniAndPropertiesFile {
 	/**
 	 * defaultParameter 파일에 들어갈 기본 헬프 내용입니다. 
 	 */
-	private static StringBuilder defaultParameterHelpText;
 	private static StringBuilder extensionListHelpText;
+	private static StringBuilder defaultParameterHelpText;
+	private static StringBuilder defaultParameterEnHelpText;
+	private static StringBuilder forceChangeParameterEnHelpText;
+	
 	private static ArrayList<String> nameList;	
 	private static String extensionListFileName = "extensionList.properties";
 	private static String defaultParameterFilename = "defaultParameter.properties";
+	private static String defaultParameterEnFilename = "defaultParameterEn.properties";
+	private static String foceChangeParameterEn = "forceChangeParameterEn.properties";
 	
+	/**
+	 * 생성자 private
+	 */
 	private CheckProgramIniAndPropertiesFile(){
 	}
 	
@@ -58,6 +66,8 @@ public class CheckProgramIniAndPropertiesFile {
 		nameList.add(UserInputData.iniFileName);
 		nameList.add(defaultParameterFilename);
 		nameList.add(extensionListFileName);
+		nameList.add(defaultParameterEnFilename);
+		nameList.add(foceChangeParameterEn);
 		
 		int ret = 0;
 		for(String path : nameList){
@@ -70,11 +80,20 @@ public class CheckProgramIniAndPropertiesFile {
 					fos = new FileOutputStream(file);
 					
 					if(path.equals(UserInputData.iniFileName)){
+						ErrorMessage.getInstance().printErrorMessage(iniHelpText.toString());
 						fos.write(iniHelpText.toString().getBytes());
 					}else if(path.equals(defaultParameterFilename)){
+						ErrorMessage.getInstance().printErrorMessage(defaultParameterHelpText.toString());
 						fos.write(Converter.convertKoreanToUnicode(defaultParameterHelpText.toString()).getBytes());
 					}else if(path.equals(extensionListFileName)){
+						ErrorMessage.getInstance().printErrorMessage(extensionListHelpText.toString());
 						fos.write(Converter.convertKoreanToUnicode(extensionListHelpText.toString()).getBytes());
+					}else if(path.equals(defaultParameterEnFilename)){
+						ErrorMessage.getInstance().printErrorMessage(defaultParameterEnHelpText.toString());
+						fos.write(Converter.convertKoreanToUnicode(defaultParameterEnHelpText.toString()).getBytes());
+					}else if(path.equals(foceChangeParameterEn)){
+						ErrorMessage.getInstance().printErrorMessage(forceChangeParameterEnHelpText.toString());
+						fos.write(Converter.convertKoreanToUnicode(forceChangeParameterEnHelpText.toString()).getBytes());
 					}
 					
 				} catch (IOException exception) {
@@ -134,7 +153,19 @@ public class CheckProgramIniAndPropertiesFile {
 		extensionListHelpText.append("# key=vale 형식으로 properties 파일과 똑같이 작성해주시면 됩니다.\n");
 		extensionListHelpText.append("# c=.c\n");
 		
-		
+		defaultParameterEnHelpText = new StringBuilder();
+		defaultParameterEnHelpText.append("#-- RCPTT++ 추가 치환시 파일 확장자명 설정\n");
+		defaultParameterEnHelpText.append("#파일 이름 : extensionList.properties\n");
+		defaultParameterEnHelpText.append("#(만약 파일이 없을경우 프로그램 폴더에 자동 새로 생성됩니다.)\n");
+		defaultParameterEnHelpText.append("#key=value 형식으로 properties 파일과 똑같이 작성해주시면 됩니다.\n");
+		defaultParameterEnHelpText.append("#예 ) source_c=.c\n");
+
+		forceChangeParameterEnHelpText = new StringBuilder();
+		forceChangeParameterEnHelpText.append("#-- RCPTT++ 영문 치환시 사용자가 key value 값을 변경하는 설정\n");
+		forceChangeParameterEnHelpText.append("#파일 이름 : forceChangeParameterEn.properties\n");
+		forceChangeParameterEnHelpText.append("#(만약 파일이 없을경우 프로그램 폴더에 자동 새로 생성됩니다.)\n");
+		forceChangeParameterEnHelpText.append("#key=value 형식으로 properties 파일과 똑같이 작성해주시면 됩니다.\n");
+		forceChangeParameterEnHelpText.append("#예 ) key=value\n");
 	}
 }
 

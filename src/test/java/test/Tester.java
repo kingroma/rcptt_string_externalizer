@@ -1,4 +1,4 @@
-package parameter_validation_tester;
+package test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -18,6 +18,7 @@ import com.java.util.UserInputData;
 
 public class Tester {
 	//실행 : alt shift x + t
+	
 	/**
 	 * 확인 대상 [[ UserInputData ]] 
 	 * rcptt++.ini 파일을 잘 읽었는지 확인합니다.
@@ -40,7 +41,7 @@ public class Tester {
 	@Test
 	public void ProgramData_테스트(){
 		ProgramData.getInstance();
-		ProgramData.getInstance().addParameter("qwe정진", "qwe김");
+//		ProgramData.getInstance().addParameter("qwe정진", "qwe김",true);
 		assertEquals(ProgramData.getInstance().searchKey("qwe김"),"qwe");
 	}
 	
@@ -156,8 +157,6 @@ public class Tester {
 				+ "\n\njeongjinkim\n\n"
 				+ "------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--\n");
 	}
-	
-	
 	
 	/**
 	 * 확인 대상 [[ Converter ]]

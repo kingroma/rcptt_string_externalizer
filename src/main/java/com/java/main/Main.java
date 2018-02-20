@@ -1,9 +1,10 @@
 package com.java.main;
 
+
 import com.java.controller.Controller;
+import com.java.util.CheckProgramIniAndPropertiesFile;
 import com.java.util.HelpMessage;
 import com.java.util.UserInputData;
-import com.java.util.CheckProgramIniAndPropertiesFile;
 
 /**
  * <pre>
@@ -22,6 +23,13 @@ public class Main {
 	// 3. 결과물이 허드슨에 붙였을때 정상 작동하는지 확인해야함
 	
 	// TODO junit test 만들기 .
+	// TODO
+	// 영문 파일로 확인하기
+	// 영문 -> 한국어로 	변경해야함 
+	// CTX 파일 2개로 유지하는게 좋을것같습니다.  //_ko , _en
+	// 영문파일의 경로가 다른것이 존재함 . 
+	// en 파일을 하나 더 만듬 
+	// 거의 다옴
 	
 	/**
 	 * 메인 프로그램 시작 루트 
@@ -30,12 +38,13 @@ public class Main {
 	public static void main(String[] args) {
 		Controller controller = null;
 		
-		if(args.length==4){
+		if(args.length==5){
 			UserInputData.getInstanceNoIniEnv();
 			UserInputData.Language = args[0];
 			UserInputData.CTPath = args[1];
 			UserInputData.ProjectPath = args[2];
 			UserInputData.ParameterCtxPath = args[3];
+			UserInputData.ParameterCtxEnPath = args[4];
 			
 			controller = new Controller();
 			controller.process();
@@ -53,6 +62,7 @@ public class Main {
 		}else{
 			HelpMessage help = new HelpMessage();
 			help.msg();
+			System.exit(1);
 		}
 	}
 }

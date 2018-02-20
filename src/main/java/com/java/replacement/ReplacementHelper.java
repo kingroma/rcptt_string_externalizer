@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.java.parameter.ParameterValidation;
@@ -16,6 +18,7 @@ import com.java.rcptt.RObject;
 import com.java.util.ErrorMessage;
 import com.java.util.Logger;
 import com.java.util.ProgramData;
+import com.java.util.UserInputData;
 
 /**
  * 주요 기능인 치환 기능입니다.
@@ -23,7 +26,6 @@ import com.java.util.ProgramData;
  * 확인되는 key가 있을경우 key로 치환합니다.
  * 확인이 되지않은 문자열들은 그대로 둡니다.
  * @author suresoft
- *
  */
 public class ReplacementHelper {
 	
@@ -43,22 +45,34 @@ public class ReplacementHelper {
 	private boolean isChange;
 
 	/**
-	 * 치환이 되어 바뀐것이 있는지 확인하며
-	 * 치환이 된것이 한개라도 있을 경우 추후 저장하기 위한 boolean 형식의 변수 입니다.
-	 */
-	private boolean needSave;
-
-	/**
 	 * 1차 치환이 종료된 후 2차 치환시 그 문자열이 경로 형식의 문자열인지
 	 * 아닌지 확인하는 정규식 표현입니다.
 	 */
-	private static final String PATH_REGEX = "^[a-zA-Z]:\\\\.*[a-zA-Z0-9가-힣]"; // 1차 치환이 종료된 후 2차 치환시 그 문자열이 path인지 아닌지 확인하는 정규식입니다.
+	private final String PATH_REGEX = "^[a-zA-Z]:\\\\.*[a-zA-Z0-9가-힣]"; // 1차 치환이 종료된 후 2차 치환시 그 문자열이 path인지 아닌지 확인하는 정규식입니다.
+	
+	/**
+	 * 한글 확인 정규식입니다.
+	 */
+	private final String KOREAN_REGEX = ".*[가-힣].*";
 
+	/**
+	 * " + "  
+	 * "ab" + "cd" 제거 를 위한 정규식입니다
+	 * 원래는 abcd 인 문장이 rcptt에서 긴 문자열이 존재할경우 나뉘어지기 때문에
+	 * 나뉜 부분을 합치기 위함입니다.
+	 */
+	private final String REMOVE_PLUS_SIGN_ECL_REGEX = "\"\n\t* *\\+ *\t*\"";
+	
 	/**
 	 * 확장자명을 담고있는 properties의 파일 이름입니다.
 	 */
-	private static final String ExtensionListFileName = "extensionList.properties";
+	private final String ExtensionListFileName = "extensionList.properties";
 
+	/**
+	 * 영문 치환시 정상적으로 적용이 되지않은 부분을 사용자가 임의로 추가하는 properties 파일입니다.
+	 */
+	private final String ForceChangeParameterEnFileName ="forceChangeParameterEn.properties";
+	
 	/**
 	 * 위의 ExtensionListFileName 에서 확인된 확장자 명을 담고 있는 ArrayList 입니다.
 	 */
@@ -68,6 +82,7 @@ public class ReplacementHelper {
 	 * 생성 과 동시에 Extension 파일을 읽습니다.
 	 */
 	public ReplacementHelper() {
+		readForceChangeParameterEnProperties();
 		readExtensionList();
 	}
 
@@ -82,22 +97,42 @@ public class ReplacementHelper {
 	public void replce() {
 		for(RObject rObj : ProgramData.getInstance().getProject().getObjects()){
 			String eclScript = rObj.getEclScript();
-
+			
 			if(eclScript != null && eclScript.length()>0){
-				rObj.setECLCode(this.replceCheck(eclScript));
-
-				if(needSave){
+				rObj.setECLCode(this.replceCheck(removePlusSignEcl(eclScript)));
+				
+				if(UserInputData.Language.equals("ko")){
 					rObj.addContexts(ProgramData.getInstance().getParameterCtxId());
+					rObj.deleteContexts(ProgramData.getInstance().getParameterEnCtxId());
 					rObj.save();
-					needSave = false;
+				}else{
+					rObj.addContexts(ProgramData.getInstance().getParameterEnCtxId());
+					rObj.deleteContexts(ProgramData.getInstance().getParameterCtxId());
+					rObj.save();
 				}
 			}
 
 		}
 
-		Logger.write(" RCPTT에서 확인된 문자열 총 갯수 : " + rcpttValueAmount + " /  변환된 갯수 : "+replaceCount + " / 퍼센트 : "+Math.round((replaceCount*100.0)/(rcpttValueAmount*1.0))+" %");
+		Logger.write(" RCPTT에서 확인된 문자열 총 갯수 : " 
+				+ rcpttValueAmount 
+				+ " / 변환된 갯수 : "+replaceCount 
+				+ " / 퍼센트 : "
+				+ Math.round((replaceCount*100.0)/(rcpttValueAmount*1.0))
+				+ " %");
 	}
 
+	/**
+	 * " + "  
+	 * "ab" + "cd" 제거 를 위한 메소드입니다.
+	 * 원래는 abcd 인 문장이 rcptt에서 긴 문자열이 존재할경우 나뉘어지기 때문에
+	 * 나뉜 부분을 합치기 위함입니다.
+	 * REMOVE_PLUS_SIGN_ECL_REGEX > 정규식은 ::  \"\n\t* *\\+ *\t*\"
+	 */
+	public String removePlusSignEcl(String ecl){
+		return ecl.replaceAll(REMOVE_PLUS_SIGN_ECL_REGEX, "");
+	}
+	
 	/**
 	 * <pre>
 	 * 크게 2가지를 가지고 치환진행을 하는 메소드입니다
@@ -127,47 +162,42 @@ public class ReplacementHelper {
 				StringBuilder keyStringBuilder = new StringBuilder();
 				StringBuilder preLineStringBuilder = new StringBuilder(); // 그전의 라인에 대해 가지고 있습니다.
 
-				// 현재 읽는 부분에서 이부분이 치환을 해야하나는 부분인지 확인하는 flag
-				boolean isKeyLine = false;
-
-				// 그전에 읽은 char를 확인하기 위함 입니다.
-				char previousChar = 0;
-
-				// properties파일과 기존에 있던 parameter로 치환 진행합니다.
-				for(char currentChar : currentLine.toCharArray()){
+				boolean isKeyLine = false; // 현재 읽는 부분에서 이부분이 치환을 해야하나는 부분인지 확인하는 flag
+				char previousChar = 0; // 그전에 읽은 char를 확인하기 위함 입니다.
+				
+				for(char currentChar : currentLine.toCharArray()){ // properties파일과 기존에 있던 parameter로 치환 진행합니다.
 					if(currentChar=='"') {
 						if(!isKeyLine) {
 							isKeyLine = true; // 현재 문자열 시작 부분으로 flag를 true시켜줍니다.
 						}else {
-							if(previousChar == '\\') {
-								// \" 이런 경우가 있으므로 그것을 피하기 위함 입니다.
+							if(previousChar == '\\') { // \" 이런 경우가 있으므로 그것을 피하기 위함 입니다.
 								keyStringBuilder.append(currentChar);
 							}else {
 								if(!preLineStringBuilder.toString().contains("[format")  
 										&&  !preLineStringBuilder.toString().contains("+")) { // 포멧형인경우와 "ab" + "cd" 인것을 피하기 위함 입니다.
-
+									
 									String output = this.findKey(keyStringBuilder.toString()); // 치환 가능한 key를 찾는 기능입니다.
 
 									if(this.isChange) {//만약 치환이 있었을 경우
 										currentLine = currentLine.replace("\""+keyStringBuilder+"\"" , output);//치환된 부분을 변경합니다.
-
-										//첫시작이 $key 인경우 RCPTT 에서는 에러가 발생하여 그것을 없애주기 위한 if 문입니다.
-//										if(preLineStringBuilder.toString().trim().length()==0){//trim 으로 앞 문자열이 공백인경우 앞의 라인의 \n을 제거합니다.
-//											if(returnStringBuilder.charAt(returnStringBuilder.length()-1)=='\n'){
-//												returnStringBuilder.deleteCharAt(returnStringBuilder.length()-1);
-//											}
-//										}
 									}
 									else {//처음 치환이 안 이러우졌을 경우 2차 치환을 진행합니다.
 										output = this.findNewKey(keyStringBuilder.toString());
 
 										if(this.isChange){//변경이 이루어 졌는지 확인합니다.
 											currentLine = currentLine.replace("\""+keyStringBuilder.toString()+"\"", output);//치환된 부분을 변경
+										}else {
+											if(preLineStringBuilder.toString().contains("get-label")){
+												output = this.getLabelReplace(keyStringBuilder.toString());
+												if(this.isChange){
+													currentLine = currentLine.replace("\""+keyStringBuilder.toString()+"\"", output);
+												}
+											}
 										}
 									}
 									rcpttValueAmount++; // 총 확인된 문자열들을 추가합니다.
 								}
-
+								
 								//set default
 								this.isChange = false;
 								isKeyLine = false;
@@ -178,11 +208,9 @@ public class ReplacementHelper {
 							}
 						}
 					}else {
-						if(!isKeyLine) {
-							// 그전 라인들을 저장합니다.
+						if(!isKeyLine) { // 그전 라인들을 저장합니다.							
 							preLineStringBuilder.append(currentChar);
-						}else {
-							// isKeyLine / flag == true 인경우  key 의 부분을 저장하고 있습니다.
+						}else { // isKeyLine / flag == true 인경우  key 의 부분을 저장하고 있습니다.
 							keyStringBuilder.append(currentChar);
 							previousChar = currentChar;
 						}
@@ -201,27 +229,45 @@ public class ReplacementHelper {
 
 
 	}
-
+	
+	/**
+	 * get-label 치환 
+	 * @param input
+	 * @return
+	 */
+	private String getLabelReplace(String input){
+		for(String keySet : ProgramData.getInstance().getParameterMap().keySet()){
+			String tempKeySet = keySet.replace("\\n", "");
+			if(input.equals(tempKeySet)){
+				String key = ProgramData.getInstance().getParameterMap().get(keySet);
+				if(!tempKeySet.equals(key)){
+					addParameter("Get_Label_"+key,tempKeySet);
+					this.isChange = true;
+					replaceCount++;
+					return "$Get_Label_"+key;
+				}
+			}
+		}
+		return "\""+input+"\"";
+	}
+	
 	/**
 	 * 입력된 key값과 모든 파라미터값을 확인하여 치환가능한경우
 	 * key값을 리턴
 	 * @param key
 	 * @return
 	 */
-	private String findKey(String key) {
-
+	private String findKey(String key) {;
 		String ret = ProgramData.getInstance().searchKey(key);
 
 		if(ret!=null){
 			this.replaceCount++;
 			this.isChange = true;
-			this.needSave = true;
 			return "$" + ret;
 		}
 
 		return "\"" + key + "\"";
 	}
-
 
 	/**
 	 * <pre>
@@ -233,7 +279,6 @@ public class ReplacementHelper {
 	 * @return
 	 */
 	private String findNewKey(String key) {
-
 		/**
 		 * key가 경로파일인 경우를 확인합니다
 		 * C:\\ 같은 경우를 기준으로합니다.
@@ -242,9 +287,8 @@ public class ReplacementHelper {
 		 */
 		if(Pattern.matches(PATH_REGEX, key)){
 			String validationKey = ParameterValidation.getValidationKey("path_"+key);
-			ProgramData.getInstance().addParameter(validationKey, key);
+			addParameter(validationKey,key);
 			this.isChange = true;
-			this.needSave = true;
 			replaceCount++;
 			return "$"+validationKey;
 		}
@@ -259,12 +303,67 @@ public class ReplacementHelper {
 			for(String extension : extensionStringList){
 				if(key.endsWith(extension)){
 					String validationKey = ParameterValidation.getValidationKey("extension_"+key);
-					ProgramData.getInstance().addParameter(validationKey, key);
+					addParameter(validationKey,key);
 					this.isChange = true;
-					this.needSave = true;
 					replaceCount++;
 					return "$"+validationKey;
 				}
+			}
+		}
+		
+		/**
+		 * 영문 치환시 한국어가 있으면 안됨으로 무식하게 모든 key를 확인하여 치환이
+		 * 가능한지 확인합니다.
+		 */
+		if(key.matches(KOREAN_REGEX)){ // 무식하게 다
+			Map<String,String> map = ProgramData.getInstance().getParameterMap();
+			
+			Set<String> keySets = map.keySet();
+			String keyTemp = "";
+			for(String keySet : keySets){
+				if(key.contains(keySet)){
+					keyTemp = key.replace(keySet, "%s");
+					if(!keyTemp.matches(KOREAN_REGEX)){
+						replaceCount++;
+						this.isChange = true;
+						String value = map.get(keySet);
+						return "[format \"" + keyTemp + "\" $" + value + "]";
+					}
+				}
+			}
+			
+			/**
+			 * 만약 위에서 확인이 안됬을경우
+			 * 하나하나 나누어서 확인해봅니다.
+			 */
+			String regex = "[a-zA-Z0-9]";
+			String[] split = key.split(regex);
+			ArrayList<String> splitKey = new ArrayList<String>();
+			boolean isNotNull = true;
+			for(String aSplit : split){
+				keyTemp = map.get(aSplit);
+				if (!aSplit.isEmpty()) {
+					if (keyTemp != null) {
+						splitKey.add(keyTemp);
+					} else {
+						isNotNull = false;
+						break;
+					}
+				}
+			}
+			if(isNotNull){
+				for(String aSplit : split){
+					if(!aSplit.isEmpty()){
+						key = key.replace(aSplit, "%s");
+					}
+				}
+				String outputFormat = "";
+				for(String aSplitKey : splitKey){
+					outputFormat += " $"+aSplitKey;
+				}
+				replaceCount++;
+				this.isChange = true;
+				return "[foramt \"" + key + "\"" + outputFormat + "]";
 			}
 		}
 		
@@ -294,10 +393,9 @@ public class ReplacementHelper {
 				else{ // 만약 ' / ' 로 나누어도 확인되지 않은경우 그전 miniKey와 현재 miniKey를 합쳐 또한번 검사를 합니다.
 					if(previousMiniKey!=null){
 						output = this.findKey(previousMiniKey+"/"+miniKey);
-						if(this.isChange){
-							//만약 치환이 되었을 경우 그전 append 한 문자열을 제거해 줍니다.
+						if(this.isChange){ // 만약 치환이 되었을 경우 그전 append 한 문자열을 제거해 줍니다.
 							formStr = formStr.delete(formStr.length()-previousMiniKey.length()-1, formStr.length());
-
+							
 							formStr.append("%s/");
 							formKeyList.append(" "+output);
 							this.isChange = false;
@@ -315,9 +413,11 @@ public class ReplacementHelper {
 			}
 			if(isFormatChange) { // 만약에 포멧형성이 가능한경우 형태를 생성하여 반환합니다.
 				this.isChange = true;
+				replaceCount++;
 				return "[format \"" + formStr.toString().substring(0, formStr.length()-1) + "\" " + formKeyList.toString() + "]";
 			}
 		}
+		
 		
 		// 아닌경우 처음에 들어왔던 key 그대로 다시 반환합니다.
 		return "\"" + key + "\"";
@@ -372,8 +472,57 @@ public class ReplacementHelper {
 		}
 	}
 	
+	/**
+	 * 한국어에서 영문테스트를 위하여
+	 * RCPTT에서 실행하였을때 결과값이 다른경우
+	 * 사용자가 force 치환 합니다.
+	 */
+	private void readForceChangeParameterEnProperties(){
+		Properties p = null;
+		InputStream is = null;
 
+		File forceChangeParameterEnFile = new File(ForceChangeParameterEnFileName);
+		
 
+		if(forceChangeParameterEnFile.exists()){
+			try {
+				is = new FileInputStream(forceChangeParameterEnFile);
+				p = new Properties();
+				p.load(is);
+				for(Object obj : p.keySet()){
+					String key = (String)obj;
+					String value = p.getProperty(key);
+					ProgramData.getInstance().addParameter(key, value,false);
+				}
+				is.close();
+			} catch (IOException e) {
+				ErrorMessage.getInstance().printErrorMessage("ReplacementHelper.read.defaultParameter.error");
+			}
+		}else{
+			Logger.write("create defaultparameter.properties");
+			FileOutputStream fos = null;
+			try {
+				fos = new FileOutputStream(ForceChangeParameterEnFileName);
+				fos.write("".getBytes());
+				fos.close();
+
+			} catch (IOException exception) {
+				ErrorMessage.getInstance().printErrorMessage("ReplacementHelper.read.defaultParameter.error");
+			}finally{
+				try {
+					if(fos!=null)
+						fos.close();
+				} catch (IOException exception2) {
+					ErrorMessage.getInstance().printErrorMessage("ReplacementHelper.read.defaultParameter.error");
+				}
+			}
+		}
+	}
+
+	/**
+	 * get set
+	 * @return
+	 */
 	public int getRcpttValueAmount() {
 		return rcpttValueAmount;
 	}
@@ -393,6 +542,10 @@ public class ReplacementHelper {
 		this.replaceCount = replaceCount;
 	}
 	
-	
+	private void addParameter(String key , String value){
+		ProgramData.getInstance().addParameter(key,value,true);
+		ProgramData.getInstance().addParameter(key,value,false);
+		
+	}
 	
 }

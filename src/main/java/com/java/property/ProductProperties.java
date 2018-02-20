@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 import com.java.util.ErrorMessage;
 import com.java.util.Logger;
 import com.java.util.ProgramData;
-import com.java.util.UserInputData;
 
 
 /**
@@ -36,7 +35,6 @@ public class ProductProperties {
 	 *  몇개의 properties파일이 있는지 확인하기 위함 입니다.
 	 */
 	private int propertiesFileCount;
-	
 	
 	/**
 	 * 파라미터로 경로를 받아 rootPath에 저장합니다
@@ -68,7 +66,7 @@ public class ProductProperties {
 	 */
 	private void isPropertiesOrJar(Path path){
 		File file = path.toFile();
-		if((isPropertiesFile(file.getAbsolutePath())) && (isContainsLanguage(file.getAbsolutePath()))) { // .properties 파일이 맞는지 language관련 문자열이 들어가있는지 확인합니다.
+		if(isPropertiesFile(file.getAbsolutePath())){ // .properties 파일이 맞는지 language관련 문자열이 들어가있는지 확인합니다.
 			readFileAndClassifyParameter(file); // 두개가 맞다면 parameter 에 추가합니다.
 		}
 		else if(isJarFile(file)) { // .jar 파일인경우 를 확인합니다.
@@ -98,23 +96,37 @@ public class ProductProperties {
 			while(entries.hasMoreElements()) {
 				entry = entries.nextElement(); 
 				
-				if( (isPropertiesFile(entry.getName())) && (isContainsLanguage(entry.getName()) )) { //만약 entry name 이 properties 와 language 에 맞을경우
+				if((isPropertiesFile(entry.getName()))) { //만약 entry name 이 properties 와 language 에 맞을경우
 					try{
-						is = jarFile.getInputStream(entry);
-						
-						properties = new Properties();
-						properties.load(is);
-						
-						pathStringBuilder = new StringBuilder();
-						pathStringBuilder.append(jarFile.getName());
-						pathStringBuilder.append("-");
-						pathStringBuilder.append(entry.getName());
-						
-						//key set을 가지고와 key들을 하나하나 Parameter에 옮깁니다.
-						properties.keySet();
-						for(Object obj : properties.keySet()){
-							String key = (String)obj;
-							ProgramData.getInstance().addParameter(key , properties.getProperty(key) , pathStringBuilder.toString());
+						if(!entry.getName().contains("META-INF") 
+								&& !entry.getName().contains("org/apache/http")
+								&& !entry.getName().contains("bouncycastle") 
+								&& !entry.getName().contains("maven")
+								){
+							is = jarFile.getInputStream(entry);
+							
+							properties = new Properties();
+							properties.load(is);
+							
+							pathStringBuilder = new StringBuilder();
+							pathStringBuilder.append(jarFile.getName());
+							pathStringBuilder.append("-");
+							pathStringBuilder.append(entry.getName());
+							
+							//key set을 가지고와 key들을 하나하나 Parameter에 옮깁니다.
+							if(isContainsKorean(entry.getName())){ // korean
+								properties.keySet();
+								for(Object obj : properties.keySet()){
+									String key = (String)obj;
+									ProgramData.getInstance().addParameter(key , properties.getProperty(key) , pathStringBuilder.toString(),true);
+								}
+							}else{ // english
+								properties.keySet();
+								for(Object obj : properties.keySet()){
+									String key = (String)obj;
+									ProgramData.getInstance().addParameter(key , properties.getProperty(key) , pathStringBuilder.toString(),false);
+								}
+							}
 						}
 					}catch(IOException exception){
 						ErrorMessage.getInstance().printErrorMessage("ProductProperties.readJar.properties.error");
@@ -122,6 +134,7 @@ public class ProductProperties {
 						try {
 							if(is!=null)
 								is.close();
+							properties = null;
 						} catch (IOException exception2) {
 							ErrorMessage.getInstance().printErrorMessage("ProductProperties.close.inputstream.error");
 						}
@@ -142,6 +155,7 @@ public class ProductProperties {
 		}
 	}
 	
+	
 
 	/**
 	 * <pre>
@@ -159,9 +173,16 @@ public class ProductProperties {
 			properties.load(is);
 
 			properties.keySet();
-			for(Object obj :properties.keySet()){
-				String key = (String)obj;
-				ProgramData.getInstance().addParameter(key, properties.getProperty(key),file.getAbsolutePath());
+			if(this.isContainsKorean(file.getAbsolutePath())){ // korean
+				for(Object obj :properties.keySet()){
+					String key = (String)obj;
+					ProgramData.getInstance().addParameter(key, properties.getProperty(key),file.getAbsolutePath(),true);
+				}
+			}else{ // english
+				for(Object obj :properties.keySet()){
+					String key = (String)obj;
+					ProgramData.getInstance().addParameter(key, properties.getProperty(key),file.getAbsolutePath(),false);
+				}
 			}
 			
 		}catch(IOException exception){
@@ -170,6 +191,7 @@ public class ProductProperties {
 			try {
 				if(is!=null)
 					is.close();
+				properties = null;
 			} catch (IOException exception2) {
 				ErrorMessage.getInstance().printErrorMessage("ProductProperties.close.inputstream.error");
 			}
@@ -196,8 +218,8 @@ public class ProductProperties {
 	 * @param path
 	 * @return
 	 */
-	private boolean isContainsLanguage(String path) {
-		return (UserInputData.Language.length()==0) || (path.contains(UserInputData.Language));
+	private boolean isContainsKorean(String path) {
+		return path.contains("ko");
 	}
 	
 	/**

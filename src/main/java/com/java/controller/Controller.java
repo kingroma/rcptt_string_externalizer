@@ -40,11 +40,17 @@ public class Controller {
 	private MyTimer mainTimer = new MyTimer();
 
 	/**
-	 * 파라미터 ctx 파일을 가지고 있을 RObject 이며
+	 * 한글 파라미터 ctx 파일을 가지고 있을 RObject 이며
 	 * 추후 저장을 위하여 Controller에서 가지고있습니다.
 	 */
 	private RObject parameterCtx;
-
+	
+	/**
+	 * 영문 파라미터 ctx 파일을 가지고 있을 RObject 이며
+	 * 추후 저장을 위하여 Controller에서 가지고 있습니다.
+	 */
+	private RObject parameterCtxEn;
+	
 	/**
 	 * process 의 시작을 하는 메소드입니다.
 	 * 생성 후 process 메소드를 호출해야지 실행이 됩니다.
@@ -54,35 +60,42 @@ public class Controller {
 		Logger.write("rcptt 문자열 스크립트 자동 치환 시스템 시작");
 		Logger.write("");
 
- 		// process 1 사용자로부터 입력받은 parameterCtx 경로에서 확인되는
-		// parameter를 ProgramData에 있는 parameterMap에 저장합니다.
+		/**
+		 * process 1 사용자로부터 입력받은 parameterCtx 경로에서 확인되는
+		 * parameter를 ProgramData에 있는 parameterMap에 저장합니다.
+		 */
 		readParameterCtx(); // process 1
 		
-		// process 2  사용자로부터 입력받은 CT 경로에서 확인되는
-		// 모든 .properties 파일을 읽어와 ProgramData에 있는
-		// parameterMap 에 추가합니다.
+		/**
+		 * process 2  사용자로부터 입력받은 CT 경로에서 확인되는
+		 * 모든 .properties 파일을 읽어와 ProgramData에 있는
+		 * parameterMap 에 추가합니다.
+		 */
 		readProperties(); // process 2
-
-		// process 3 사용자로부터 입력받은 RCPTT Project 경로에서 확인되는
-		// 모든 testcase와 ctx 파일을 읽어와 ProgramData에 있는
-		// Project에 저장합니다.
+		
+		/**
+		 * process 3 사용자로부터 입력받은 RCPTT Project 경로에서 확인되는
+		 * 모든 testcase와 ctx 파일을 읽어와 ProgramData에 있는
+		 * Project에 저장합니다.
+		 */
 		readProject(); // process 3
 
-		// process 4
-		// process 1과 process2에서 읽어온 parameter를 확인하여
-		// process 3에서 읽은 testcase 파일에 있는 문자열을 $key
-		// 형식으로 치환합니다.
+		/**
+		 * process 4
+		 * process 1과 process2에서 읽어온 parameter를 확인하여
+		 * process 3에서 읽은 testcase 파일에 있는 문자열을 $key
+		 * 형식으로 치환합니다.
+		 */
 		replaceStringToKey(); // process 4
 
-		// 마지막으로 parameterMap에있는 모든 정보들을 저장합니다.
-		lastSave();
-
+		
+		lastSave(); // 마지막으로 parameterMap에있는 모든 정보들을 저장합니다.
 
 		Logger.write("");
 		Logger.write("rcptt 문자열 스크립트 자동 치환 시스템 끝");
 
 		mainTimer.end();
-
+		
 	}
 
 	/**
@@ -91,12 +104,13 @@ public class Controller {
 	 * 유저가 입력한 parameter 경로에서 parameter 를 읽어온 후
 	 * 읽은 후 ProgramData에 있는 parameterMap에 저장합니다.
 	 * </pre>
-	 * @see Parameter
 	 */
 	private void readParameterCtx() { // process 1
 		Logger.write("\nprocess 1 \n read prameter ctx file \n " + UserInputData.ParameterCtxPath);
-
-		parameterCtx= new RObject(UserInputData.ParameterCtxPath);
+		Logger.write("\n read prameter ctx en file \n " + UserInputData.ParameterCtxEnPath);
+		
+		parameterCtxEn = new RObject(UserInputData.ParameterCtxEnPath);
+		parameterCtx = new RObject(UserInputData.ParameterCtxPath);
 		
 	}
 
@@ -115,9 +129,8 @@ public class Controller {
 
 		ProductProperties productProperties = new ProductProperties(UserInputData.CTPath); // Property property
 		productProperties.read();
+		
 	}
-
-
 
 	/**
 	 * <pre>
@@ -135,7 +148,7 @@ public class Controller {
 		rcpttPrj.read();
 		Logger.write(" RCPTT 프로젝트에서 읽어온 파일 갯수 : " + ProgramData.getInstance().getProject().getObjects().size());
 	}
-
+	
 	/**
 	 * <pre>
 	 * <b>process 4</b>
@@ -148,7 +161,7 @@ public class Controller {
 	private void replaceStringToKey() {
 		Logger.write("\nprocess 4 \n substitution");
 
-		readProductProperties();
+		readDefaultProperties();
 
 		ReplacementHelper replacementHelper = new ReplacementHelper(); // Substitution substitution
 		replacementHelper.replce();
@@ -161,11 +174,13 @@ public class Controller {
 	 * </pre>
 	 */
 	private void lastSave() {
-		Logger.write("\n parameter의 총 갯수 : "+ProgramData.getInstance().getParameterMap().size());
-		Logger.write(" 최종 저장중 ..");
-
+//		Logger.write("\n parameter의 총 갯수 : "+ProgramData.getInstance().getParameterMap().size());
+//		Logger.write("\n 발견된 parameterEn의 총 갯수 : "+ProgramData.getInstance().getParameterMapEn().size());
+		Logger.write("\n 최종 저장중 ..");
+		
 		parameterCtx.save();
-
+		parameterCtxEn.save();
+		
 	}
 
 	/**
@@ -175,13 +190,18 @@ public class Controller {
 	 * 사용자가 추가하고 싶은 문자열이 있을경우 이 properties jar파일안에
 	 * 입력해주시면 됩니다.
 	 */
-	private void readProductProperties(){
+	private void readDefaultProperties(){
 		String defaultParameterFileName = "defaultParameter.properties"; // 파일 이름
-
+		String defaultParameterEnFilename = "defaultParameterEn.properties"; // 파일 이름
 		InputStream is = null;
 		Properties p = null;
 		File defaultParameterFile = new File(defaultParameterFileName);
-
+		File defaultParameterEnFile = new File(defaultParameterEnFilename);
+		
+		/**
+		 *  한글 default parameter 파일을 읽어 
+		 *  parameter map에 추가합니다. 
+		 */
 		if(defaultParameterFile.exists()){
 			try {
 				is = new FileInputStream(defaultParameterFile);
@@ -189,7 +209,8 @@ public class Controller {
 				p.load(is);
 				for(Object obj : p.keySet()){
 					String key = (String)obj;
-					ProgramData.getInstance().addParameter("default_name_"+key, Converter.convertKoreanToUnicode(p.getProperty(key)));
+					ProgramData.getInstance().addParameter("default_name_"+key, Converter.convertKoreanToUnicode(p.getProperty(key)),true);
+//					ProgramData.getInstance().addParameter("default_name_"+key, Converter.convertKoreanToUnicode(p.getProperty(key)));
 				}
 				is.close();
 			} catch (IOException exception) {
@@ -200,6 +221,36 @@ public class Controller {
 			FileOutputStream fos = null;
 			try {
 				fos = new FileOutputStream(defaultParameterFile);
+				fos.write("".getBytes());
+				fos.close();
+			} catch (IOException exception) {
+				Logger.write("read defaultParameter.properties output stream error");
+			}
+		}
+		
+		/**
+		 * 영문 default parameter 파일을 읽어 
+		 *  parameter en map에 추가합니다.
+		 */
+		if(defaultParameterEnFile.exists()){
+			try {
+				is = new FileInputStream(defaultParameterEnFile);
+				p = new Properties();
+				p.load(is);
+				for(Object obj : p.keySet()){
+					String key = (String)obj;
+					ProgramData.getInstance().addParameter("default_name_"+key, Converter.convertKoreanToUnicode(p.getProperty(key)),false);
+//					ProgramData.getInstance().addParameterEn("default_name_"+key, Converter.convertKoreanToUnicode(p.getProperty(key)));
+				}
+				is.close();
+			} catch (IOException exception) {
+				Logger.write("read defaultParameterEn.properties error");
+			}
+		}else{
+			Logger.write("create defaultparameterEn.properties");
+			FileOutputStream fos = null;
+			try {
+				fos = new FileOutputStream(defaultParameterEnFile);
 				fos.write("".getBytes());
 				fos.close();
 			} catch (IOException exception) {

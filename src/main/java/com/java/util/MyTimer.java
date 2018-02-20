@@ -47,7 +47,8 @@ public class MyTimer {
 		this.endTime = new Date();
 		this.lTime = endTime.getTime() - startTime.getTime();
 		
-		Logger.write("TIME : " + lTime / 1000.0 + "(s)");
+		Logger.write("\n [[ 걸린시간 : 약 " + Math.round((lTime / 1000.0)) + "(s) ]] ");
+		
 	}
 	
 	/**
@@ -69,7 +70,7 @@ public class MyTimer {
 	 * 총 시간 출력
 	 */
 	public void printAdd(){
-		Logger.write("TIME : " + addTime / 1000.0 + "(s)");
+		Logger.write("\n [[ 걸린시간 : 약 " + Math.round((addTime / 1000)) + "(s) ]] ");
 	}
 	
 	

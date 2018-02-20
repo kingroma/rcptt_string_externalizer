@@ -62,8 +62,11 @@ public class HelpMessage {
 		helpMessageStringBuilder.append("#ProjectPath=ecl 스크립트가 있는 파일 경로\n");
 		helpMessageStringBuilder.append("ProjectPath=\n");
 		helpMessageStringBuilder.append("\n");
-		helpMessageStringBuilder.append("#ParameterCtxPath=파라미터가 들어있는 혹은 빈 ctx 파일 경로\n");
+		helpMessageStringBuilder.append("#ParameterCtxPath= 한글 파라미터가 들어있는 혹은 빈 ctx 파일 경로\n");
 		helpMessageStringBuilder.append("ParameterCtxPath=\n");
+		helpMessageStringBuilder.append("\n");
+		helpMessageStringBuilder.append("#ParameterCtxEnPath= 영문 파라미터가 들어있는 혹은 빈 ctx 파일 경로\n");
+		helpMessageStringBuilder.append("ParameterCtxEnPath=\n");
 		helpMessageStringBuilder.append("\n");
 		helpMessageStringBuilder.append("#  << - 이 들어간 경우는 주석");
 		
@@ -90,7 +93,8 @@ public class HelpMessage {
 		helpMessageStringBuilder.append(term);
 		
 		helpMessageStringBuilder.append("#-- RCPTT++ 사용자 지정 파라미터 설정\n");
-		helpMessageStringBuilder.append("파일 이름 : defaultParameter.properties\n");
+		helpMessageStringBuilder.append("한글 파일 이름 : defaultParameter.properties\n");
+		helpMessageStringBuilder.append("영문 파일 이름 : defaultParameterEn.properties\n");
 		helpMessageStringBuilder.append("(만약 파일이 없을경우 프로그램 폴더에 자동 새로 생성됩니다.)\n");
 		helpMessageStringBuilder.append("\n");
 		helpMessageStringBuilder.append("properties파일이며 CT제품에서 확인되지 않는 새로운 키를 넣기 위한 파일입니다.\n");
@@ -106,6 +110,14 @@ public class HelpMessage {
 		helpMessageStringBuilder.append("\n key=value 형식으로 properties 파일과 똑같이 작성해주시면 됩니다.");
 		helpMessageStringBuilder.append("\n 예 ) source_c=.c");
 		
+		helpMessageStringBuilder.append(term);
+		
+		helpMessageStringBuilder.append("#-- RCPTT++ 영문 치환시 사용자가 key value 값을 변경하는 설정\n");
+		helpMessageStringBuilder.append("파일 이름 : forceChangeParameterEn.properties\n");
+		helpMessageStringBuilder.append("(만약 파일이 없을경우 프로그램 폴더에 자동 새로 생성됩니다.)");
+		helpMessageStringBuilder.append("\n");
+		helpMessageStringBuilder.append("\n key=value 형식으로 properties 파일과 똑같이 작성해주시면 됩니다.");
+		helpMessageStringBuilder.append("\n 예 ) key=value");
 		
 	}
 }

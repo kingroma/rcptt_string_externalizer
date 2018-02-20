@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import com.java.util.ErrorMessage;
 import com.java.util.ProgramData;
+import com.java.util.UserInputData;
 
 /*
  * 
@@ -119,9 +120,8 @@ public class RObject {
 
 			String currentLine = "";
 			while ((currentLine = reader.readLine()) != null) {
-				if (currentLine.equals("--- RCPTT testcase ---")) {
-					// RCPTT 파일의 첫 시작 인트로 do nothing
-				} else if (currentLine.trim().length() == 0) { //비어있을경우
+				if (currentLine.equals("--- RCPTT testcase ---")) {	} // RCPTT 파일의 첫 시작 인트로 do nothing 
+				else if (currentLine.trim().length() == 0) { //비어있을경우
 					break;
 				} else {
 					String[] splitLine = currentLine.split(":",2);
@@ -179,9 +179,8 @@ public class RObject {
 
 			//위에 포멧시작을 건너 뛰기 위하여
 			while ((currentLine = reader.readLine()) != null) {
-				if (currentLine.equals("--- RCPTT testcase ---")) {
-					// do nothing
-				} else if (currentLine.trim().length() == 0) {
+				if (currentLine.equals("--- RCPTT testcase ---")) {	} // do nothing 
+				else if (currentLine.trim().length() == 0) {
 					break;
 				}
 			}
@@ -209,14 +208,11 @@ public class RObject {
 							isParameter = true;
 						}
 						isContentLine = true;
-					}else if (isContentLine) {
-						// 이제 종료
-						if(isParameter) {
-							//String start_line , String content_type , String entry_name , String text , String end_line , boolean isParameter
-							this.content.add(new RObjectContent(startLine,contentType,entryName,"",startLine+"--", true));
+					}else if (isContentLine) { // 이제 종료
+						if(isParameter) { // String start_line , String content_type , String entry_name , String text , String end_line , boolean isParameter
+							this.content.add(new RObjectContent(startLine,contentType,entryName,"",startLine+"--", true,this.path));
 							isParameter = false;
-						}else {
-							//String start_line , String content_type , String entry_name , String text , String end_line , boolean isParameter
+						}else { // String start_line , String content_type , String entry_name , String text , String end_line , boolean isParameter
 							this.content.add(new RObjectContent(startLine,contentType,entryName,contentText.toString(),startLine+"--" , false));
 						}
 						isContentLine = false;
@@ -225,7 +221,11 @@ public class RObject {
 					if(isParameter) {
 						if(currentLine.contains("=")) {// = 가없는경우 그 라인은 버림
 							String[] splitLine = currentLine.split("=",2);
-							ProgramData.getInstance().addParameter(splitLine[0],splitLine[1]);
+							if(this.path.equals(UserInputData.ParameterCtxPath)){
+								ProgramData.getInstance().addParameter(splitLine[0],splitLine[1],true);
+							}else if (this.path.equals(UserInputData.ParameterCtxEnPath)){
+								ProgramData.getInstance().addParameter(splitLine[0],splitLine[1],false);
+							}
 						}
 					}
 					else {
@@ -249,6 +249,7 @@ public class RObject {
 	public String getEclScript() {
 		for(RObjectContent tempRObjectContent : this.content){
 			if (tempRObjectContent.getType() == RcpttResourceType.ECL) {
+				
 				return tempRObjectContent.getText();
 			}
 		}
@@ -273,14 +274,18 @@ public class RObject {
 	* 해당하는 타입을 결정합니다.
 	* 하드코딩
 	*/
-	private void setFormType() {
-		// 이것이 무슨 파일인지 분류 (not yet = -1 / testcase = 0 / parameter = 1 / ecl = 2 )
+	private void setFormType() { // 이것이 무슨 파일인지 분류 (not yet = -1 / testcase = 0 / parameter = 1 / ecl = 2 )
 		RObjectForm tempRObjevtForm = this.selectRObjectForm("Context-Type");
 		if (tempRObjevtForm == null) {
 			this.type = RcpttResourceType.TESTCASE; // testcase
 		} else if (tempRObjevtForm.getValue().equals("org.eclipse.rcptt.ctx.parameters")) {
 			this.type = RcpttResourceType.PARAMETER;
-			ProgramData.getInstance().setParameterCtxId(selectRObjectForm("Id").getValue());
+			if(this.path.equals(UserInputData.ParameterCtxPath)){
+				ProgramData.getInstance().setParameterCtxId(selectRObjectForm("Id").getValue());
+			}
+			else if(this.path.equals(UserInputData.ParameterCtxEnPath)){
+				ProgramData.getInstance().setParameterEnCtxId(selectRObjectForm("Id").getValue());
+			}
 		} else if (tempRObjevtForm.getValue().equals("org.eclipse.rcptt.ctx.ecl")) {
 			this.type = RcpttResourceType.ECL;
 		}
@@ -302,8 +307,27 @@ public class RObject {
 				}
 			}
 		}
+		
 	}
-
+	
+	/**
+	 * 사용자가 en 혹은 ko를 입력하였을때 
+	 * testcase에서는 그에 맞게 변형되어야 함으로 
+	 * 그전에 있던 parameter ctx 파일의 id 값을 제거 후 
+	 * 위에 있는 메소드인 add 를 추가합니다.
+	 * @param id
+	 */
+	public void deleteContexts(String id){
+		if (this.type == RcpttResourceType.TESTCASE) {
+			RObjectForm tempRObjectForm = this.selectRObjectForm("Contexts");
+			if (tempRObjectForm == null) {	} //do nothing 
+			else {
+				tempRObjectForm.setValue(tempRObjectForm.getValue().replace(id+",", ""));
+				tempRObjectForm.setValue(tempRObjectForm.getValue().replace(","+id, ""));
+				tempRObjectForm.setValue(tempRObjectForm.getValue().replace(id, ""));
+			}
+		}
+	}
 	/**
 	 * 현재 RObejctform 과 content 를 이용하여
 	 * RCPTT 파일의 포멧대로 파일을 덮어써 저장합니다.
@@ -313,17 +337,15 @@ public class RObject {
 		String newLine = "\n";
 		saveStringBuilder.append("--- RCPTT testcase ---"+newLine); // intro
 
-		for(RObjectForm tempRObjectForm : this.form){
-			//form들을 가지고와서 saveStringBuilder에 추가합니다.
+		for(RObjectForm tempRObjectForm : this.form){ // form들을 가지고와서 saveStringBuilder에 추가합니다.
 			saveStringBuilder.append(tempRObjectForm.getKey());
 			saveStringBuilder.append(": ");
 			saveStringBuilder.append(tempRObjectForm.getValue());
 			saveStringBuilder.append(newLine);
 		}
 		saveStringBuilder.append(newLine);
-		for(RObjectContent tempContent : this.content){
-			//content들을 가지고와서 saveStringBuilder에 추가합니다.
-			saveStringBuilder.append(tempContent.output());
+		for(RObjectContent tempContent : this.content){ // content들을 가지고와서 saveStringBuilder에 추가합니다.
+			saveStringBuilder.append(tempContent.output());			
 		}
 		FileOutputStream fos = null;
 		try {

@@ -51,6 +51,11 @@ public class UserInputData {
 	public static String ParameterCtxPath;
 	
 	/**
+	 * rcptt++.ini  파일에서 parameter en ctx path 내용을 담고 있을 String 형 변수입니다
+	 */
+	public static String ParameterCtxEnPath;
+	
+	/**
 	 * rcptt++.ini  파일에서 CT 제품의 path 내용을 담고 있을 String 형 변수입니다
 	 */
 	public static String CTPath;
@@ -59,7 +64,6 @@ public class UserInputData {
 	 * rcptt++.ini  파일에서 RCPTT project path 내용을 담고 있을 String 형 변수입니다
 	 */
 	public static String ProjectPath;
-	
 	
 	/**
 	 * rcptt++.ini에서 읽어온 정보들을 map형식으로 가지고 있습니다.
@@ -70,12 +74,12 @@ public class UserInputData {
 	/**
 	 * UserInfo 생성과 동시에 infoEnv() 메소드 호출합니다.
 	 */
-	
 	private UserInputData(boolean bool) {
 		if(!bool){
 			initEnv();
 		}
 	}
+	
 	/**
 	 * Instance를 반환하며 
 	 * Instance == null 일경우 새로 생성 
@@ -136,6 +140,7 @@ public class UserInputData {
 		Language = searchIniInfo("Language");
 		ProjectPath = searchIniInfo("ProjectPath");
 		ParameterCtxPath = searchIniInfo("ParameterCtxPath");
+		ParameterCtxEnPath = searchIniInfo("ParameterCtxEnPath");
 		CTPath = searchIniInfo("CodeScrollFilePath");
 	}
 	
