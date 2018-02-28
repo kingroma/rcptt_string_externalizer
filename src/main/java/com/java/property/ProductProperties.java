@@ -17,7 +17,6 @@ import com.java.util.ErrorMessage;
 import com.java.util.Logger;
 import com.java.util.ProgramData;
 
-
 /**
  * 생성자로 부터 경로를 받아 그 경로를 시작으로 
  * 모든 .properties파일을 읽어 ProgramData의 parameter에 추가합니다.
@@ -66,6 +65,7 @@ public class ProductProperties {
 	 */
 	private void isPropertiesOrJar(Path path){
 		File file = path.toFile();
+		
 		if(isPropertiesFile(file.getAbsolutePath())){ // .properties 파일이 맞는지 language관련 문자열이 들어가있는지 확인합니다.
 			readFileAndClassifyParameter(file); // 두개가 맞다면 parameter 에 추가합니다.
 		}
@@ -82,6 +82,7 @@ public class ProductProperties {
 	private void readJarFileClassifyParameter(File file) {
 		// jar파일 안을 확인하여 그것이 properties 파일인경우 parameter 로 추가합니다.
 		JarFile jarFile  = null;
+		
 		try {
 			propertiesFileCount++; 
 			jarFile = new JarFile(file.getAbsolutePath());  // jar 파일 경로를 읽습니다.
@@ -132,8 +133,9 @@ public class ProductProperties {
 						ErrorMessage.getInstance().printErrorMessage("ProductProperties.readJar.properties.error");
 					}finally{
 						try {
-							if(is!=null)
+							if(is!=null){
 								is.close();
+							}
 							properties = null;
 						} catch (IOException exception2) {
 							ErrorMessage.getInstance().printErrorMessage("ProductProperties.close.inputstream.error");
@@ -155,8 +157,6 @@ public class ProductProperties {
 		}
 	}
 	
-	
-
 	/**
 	 * <pre>
 	 * properties파일을 읽어와서
@@ -167,6 +167,7 @@ public class ProductProperties {
 	private void readFileAndClassifyParameter(File file) { 
 		InputStream is = null;
 		Properties properties = null;
+		
 		try{
 			is = new FileInputStream(file);
 			properties = new Properties();
@@ -189,16 +190,15 @@ public class ProductProperties {
 			ErrorMessage.getInstance().printErrorMessage("ProductProperties.read.properties.error");
 		}finally{
 			try {
-				if(is!=null)
+				if(is!=null){
 					is.close();
+				}
 				properties = null;
 			} catch (IOException exception2) {
 				ErrorMessage.getInstance().printErrorMessage("ProductProperties.close.inputstream.error");
 			}
 		}
-		
 		propertiesFileCount++;
-		
 	}	
 	
 	/**

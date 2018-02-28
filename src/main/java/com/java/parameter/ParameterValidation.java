@@ -13,19 +13,20 @@ import com.java.util.UserInputData;
  */
 public class ParameterValidation {
 	/**
-	 * 단축키 [[ 완료(&F) ]] 와 같은 문자열에서 & 를 제거하기 위한 정규식입니다.
+	 * 단축키 [[ 완료(&F) ]] 와 같은 문자열에서 & 를 제거하기 위한 정규식 입니다.
 	 */
 	private static final String VALUE_SHORTCUT_REGEX = ".*\\(&[A-Z]\\).*";
 	
 	/**
-	 * 
+	 * 단축키 [[ &Next ]] 와 같은 영문 문자열에서 & 를 제거하기 위한 정규식 입니다.
 	 */
 	private static final String VALUE_SHORTCUT_REGEX_EN = ".*&[a-zA-Z].*";
 	
 	/**
 	 * key에 한글이 들어있는지 , RCPTT 에서 인식하지 못하는 특수문자가 있는지 띄어쓰기가 있는지 등을 확인합니다.
 	 */
-	private static final String KEY_VALIDATION_REGEX = "[가-힣 \t`~!@#$%^&*()+=\\-,:?<>|]";
+	private static final String KEY_VALIDATION_REGEX = "[가-힣 \t`~!@#$%^&*()+=\\\\\\-,:;'\"/?<>|\\]\\[]";
+	//private static final String KEY_VALIDATION_REGEX = "[가-힣 \t`~!@#$%^&*()+=\\-,:?<>|]";
 	
 	/**
 	 * plugins|plugin|.Alpha|.properties|_ko_KR|_ko
@@ -39,20 +40,36 @@ public class ParameterValidation {
 	private static final String KEY_REMOVE_REGEX2 = "\\\\|/";
 	
 	/**
-	 * 
+	 * {0} {1} {2} 와 같은 문자열을 확인하기 위함입니다. 
 	 */
-	//private static final String RANDOM_VALUE_REGEX = "'*\"*\\{[0-9]\\}'*\"*";
-	private static final String RANDOM_VALUE_REGEX = "\\{[0-9]\\}";
+	private static final String RANDOM_VALUE_SPLIT_REGEX = "'?\\{[0-9]\\}'?";
+	//private static final String RANDOM_VALUE_MATCH_REGEX = ".*\\{[0-9]\\}.*";
+	
+	/**
+	 * 특수문자 확인 정규식입니다.
+	 */
+//	private static final String SPECIAL_CHAR_REGEX = ".*[!@#$%^&*()_-`~+/,?><].*";
+	
+	/**
+	 * private 생성자
+	 */
 	private ParameterValidation(){
 
 	}
 
+	/**
+	 * {0} {1} 을 나누어 key value 값을 추가하기 위함입니다.
+	 * @param value
+	 * @return
+	 */
 	public static ArrayList<String> getValidationRandomValue(String value){
-		String[] split = value.split(RANDOM_VALUE_REGEX);
+		String[] split = value.split(RANDOM_VALUE_SPLIT_REGEX);
 		ArrayList<String> resultSplit = new ArrayList<String>();
+		
 		for(String indexSplit : split){
 			if(!indexSplit.isEmpty()){
 				resultSplit.add(indexSplit);
+				
 			}
 		}
 		return resultSplit;
@@ -67,7 +84,6 @@ public class ParameterValidation {
 	 */
 	public static String getValidationKey(String key){
 		key = getBasicValidation(key);
-
 		return key;
 	}
 
@@ -77,7 +93,6 @@ public class ParameterValidation {
 	 * @param value
 	 * @return
 	 */
-	public static int count = 0;
 	public static String getValidationValue(String value){ 
 		value = value.trim();
 		if(value.contains("&")){
@@ -88,15 +103,16 @@ public class ParameterValidation {
 			}
 				
 		}
-		
 		value = value.replace("\n", "\\n"); // properties에서 불러오는 뉴 라인을 변경하기위하여 추가하였습니다.
-
-//		value = value.replaceAll("\\\\\\\\", "");
-//		value = value.replaceAll("/","\\\\\\\\/");
 		
 		return value;
 	}
 	
+	/**
+	 * properties에서 불러올때 \n을 \\n으로 바꾸어 문자열로 변경해줍니다.
+	 * @param value
+	 * @return
+	 */
 	public static String getValidationValueOriginal(String value){
 		value = value.replace("\n", "\\n"); // properties에서 불러오는 뉴 라인을 변경하기위하여 추가하였습니다.
 		return value;
@@ -121,7 +137,6 @@ public class ParameterValidation {
 		return path;
 	}
 
-
 	/**
 	 * RCPTT에서 확인이 어려운 특수문자와
 	 * 몇몇가지의 문자열패턴을 제거합니다.
@@ -129,17 +144,10 @@ public class ParameterValidation {
 	 * @return
 	 */
 	private static String getBasicValidation(String value){
+		value = value.replaceAll(KEY_REMOVE_REGEX, ""); // plugins|plugin|.Alpha|.properties|_ko_KR|_ko 제거
+		value = value.replaceAll(KEY_REMOVE_REGEX2, "."); // \ / 제거하며 제거시 .으로 치환
+		value = value.replaceAll(KEY_VALIDATION_REGEX,""); // 특수문자 , 한글등 제거
 		
-		//plugins|plugin|.Alpha|.properties|_ko_KR|_ko 제거
-		value = value.replaceAll(KEY_REMOVE_REGEX, "");
-		// \ / 제거하며 제거시 .으로 치환
-		value = value.replaceAll(KEY_REMOVE_REGEX2, ".");
-				
-		//특수문자 , 한글등 제거
-		value = value.replaceAll(KEY_VALIDATION_REGEX,"");
-		
-		
-
 		return value;
 	}
 

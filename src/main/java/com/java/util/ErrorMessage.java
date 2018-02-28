@@ -14,17 +14,16 @@ import java.util.Properties;
  *
  */
 public class ErrorMessage {
+	/**
+	 * 싱글톤 패턴의 INSTANCE입니다.
+	 */
+	private static ErrorMessage INSTANCE;
 	
 	/**
 	 * properties 에서 내용을 가지고와 
 	 * 아래의 Map에 저장하고 있습니다.
 	 */
 	private Map<String,String> errorMessageMap;
-	
-	/**
-	 * 싱글톤 패턴의 INSTANCE입니다.
-	 */
-	private static ErrorMessage INSTANCE;
 	
 	/**
 	 * messageProperties의 경로

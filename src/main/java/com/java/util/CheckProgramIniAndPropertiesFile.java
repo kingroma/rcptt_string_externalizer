@@ -59,6 +59,8 @@ public class CheckProgramIniAndPropertiesFile {
 	 * @return
 	 */
 	public static boolean createFile(){
+		int ret = 0;
+		
 		settingStringBuilder();
 		
 		nameList = new ArrayList<String>();
@@ -69,7 +71,6 @@ public class CheckProgramIniAndPropertiesFile {
 		nameList.add(defaultParameterEnFilename);
 		nameList.add(foceChangeParameterEn);
 		
-		int ret = 0;
 		for(String path : nameList){
 			File file = new File(path);
 			FileOutputStream fos = null;

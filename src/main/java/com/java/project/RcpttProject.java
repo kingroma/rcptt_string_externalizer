@@ -65,6 +65,7 @@ public class RcpttProject {
 	 */
 	private void setRObject(Path path){
 		File file = path.toFile();
+		
 		if ((checkExtension(file)) && (!isParameterCtxFile(file) && (!isParameterCtxEnFile(file)))) { // 확장자명이 ctx , test 인경우 ,  이 파일이 parameter의 파일이 아닌경우를 확인합니다.
 			this.rObjects.add(new RObject(file.getPath()));  // 현재 RObject ArrayList에 추가됩니다.
 		}else {
@@ -87,7 +88,7 @@ public class RcpttProject {
 	 * @return
 	 */
 	private boolean isParameterCtxEnFile(File file){
-		return file.getAbsoluteFile().equals(UserInputData.ParameterCtxEnPath);
+		return file.getAbsolutePath().equals(UserInputData.ParameterCtxEnPath);
 	}
 	
 	/**

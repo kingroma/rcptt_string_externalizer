@@ -40,7 +40,6 @@ Entry-Name: .parameters.context
  
  */
 
-
 /**
  *
  * <pre>
@@ -113,6 +112,7 @@ public class RObject {
 		FileInputStream fis = null;
 		InputStreamReader isr = null;
 		BufferedReader reader = null;
+		
 		try {
 			fis = new FileInputStream(path);
 			isr = new InputStreamReader(fis, "UTF-8");
@@ -129,7 +129,6 @@ public class RObject {
 				}
 			}
 			this.setFormType();
-
 
 			reader.close();
 		} catch (IOException exception) {
@@ -152,8 +151,6 @@ public class RObject {
 		}
 
 	}
-
-
 
 	/**
 	 * form 의 다음문장을 읽는 기능
@@ -276,6 +273,7 @@ public class RObject {
 	*/
 	private void setFormType() { // 이것이 무슨 파일인지 분류 (not yet = -1 / testcase = 0 / parameter = 1 / ecl = 2 )
 		RObjectForm tempRObjevtForm = this.selectRObjectForm("Context-Type");
+		
 		if (tempRObjevtForm == null) {
 			this.type = RcpttResourceType.TESTCASE; // testcase
 		} else if (tempRObjevtForm.getValue().equals("org.eclipse.rcptt.ctx.parameters")) {
@@ -328,6 +326,7 @@ public class RObject {
 			}
 		}
 	}
+	
 	/**
 	 * 현재 RObejctform 과 content 를 이용하여
 	 * RCPTT 파일의 포멧대로 파일을 덮어써 저장합니다.
@@ -335,6 +334,7 @@ public class RObject {
 	public void save() {
 		StringBuilder saveStringBuilder = new StringBuilder();
 		String newLine = "\n";
+		
 		saveStringBuilder.append("--- RCPTT testcase ---"+newLine); // intro
 
 		for(RObjectForm tempRObjectForm : this.form){ // form들을 가지고와서 saveStringBuilder에 추가합니다.
@@ -347,7 +347,9 @@ public class RObject {
 		for(RObjectContent tempContent : this.content){ // content들을 가지고와서 saveStringBuilder에 추가합니다.
 			saveStringBuilder.append(tempContent.output());			
 		}
+		
 		FileOutputStream fos = null;
+		
 		try {
 			fos = new FileOutputStream(this.file);
 			OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
@@ -358,14 +360,40 @@ public class RObject {
 			ErrorMessage.getInstance().printErrorMessage("RObject.save.error");
 		}finally{
 			try {
-				if(fos!=null)
+				if(fos!=null){
 					fos.close();
+				}
 			} catch (IOException exception2) {
 				ErrorMessage.getInstance().printErrorMessage("RObject.close.inputstream.error");
 			}
 		}
 	}
+	
+	/**
+	 * Test 용 입니다.
+	 * save되는 내용을 그대로 String 으로 리턴합니다.
+	 * @return
+	 */
+	public String getOutputFormat(){
+		StringBuilder saveStringBuilder = new StringBuilder();
+		String newLine = "\n";
+		
+		saveStringBuilder.append("--- RCPTT testcase ---"+newLine); // intro
 
+		for(RObjectForm tempRObjectForm : this.form){ // form들을 가지고와서 saveStringBuilder에 추가합니다.
+			saveStringBuilder.append(tempRObjectForm.getKey());
+			saveStringBuilder.append(": ");
+			saveStringBuilder.append(tempRObjectForm.getValue());
+			saveStringBuilder.append(newLine);
+		}
+		saveStringBuilder.append(newLine);
+		for(RObjectContent tempContent : this.content){ // content들을 가지고와서 saveStringBuilder에 추가합니다.
+			saveStringBuilder.append(tempContent.output());			
+		}
+		
+		return saveStringBuilder.toString();
+	}
+	
 	/**
 	 * form 에서 입력한 파라미터와 동일한 key를 가진경우
 	 * RObjectForm 을 반환합니다.
@@ -380,4 +408,17 @@ public class RObject {
 		}
 		return null;
 	}
+
+	/**
+	 * get set 
+	 */
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+	
+	
 }

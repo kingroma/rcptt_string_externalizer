@@ -66,7 +66,7 @@ public class ProgramData {
 	/**
 	 * 특수문자를 확인하는 정규식 표현입니다.
 	 */
-	private final String SPECIAL_CHAR_REGEX = ".*[!@#$%^&*()_-`~+/,.?><].*";
+	private final String SPECIAL_CHAR_REGEX = ".*[!@#$%^&*()_-`~+/,?><=-].*";
 	
 	/**
 	 * 첫 클래스가 생성되었을때
@@ -100,15 +100,11 @@ public class ProgramData {
 		
 		if(valueCheck(value)){
 			if(isKorean){
+				printParameterCollision(key,value);
 				parameterMap.put(value , key);
 			}else{
 				parameterMapEn.put(key, value);
 			}
-		}
-		if(isKorean){
-			checkSpecialCharAndPutParameterIntoMap(key,value,true);
-		}else{
-			checkSpecialCharAndPutParameterIntoMap(key,value,false);
 		}
 	}
 	
@@ -116,38 +112,85 @@ public class ProgramData {
 	 * parameter map 에 파라미터를 추가하는 
 	 * 전역 메소드입니다.
 	 * validation을 거친 후 
-	 * {0} , {1} , {2} 를 확인하기 위한 메소드를 거친 후 
-	 * 추가됩니다.
+	 * 여러 유효성검사와 split을 통하여 추가됩니다.
+	 * 자세한 내용은 아래에 추가적으로 달았습니다.
 	 * @param key
 	 * @param value
 	 * @param path
 	 * @param isKorean
 	 */
 	public void addParameter(String key , String value , String path, boolean isKorean){
+		/**
+		 * 기본 유효성 검사
+		 * @see ParameterValidation
+		 */
 		key = ParameterValidation.getValidationPath(path)+"_"+ParameterValidation.getValidationKey(key);
 		String valueOriginal = Converter.convertUnicodeToKorean(ParameterValidation.getValidationValueOriginal(value));
 		value = Converter.convertUnicodeToKorean(ParameterValidation.getValidationValue(value));
 		
+		printParameterCollision(key,value);
+		
+		/**
+		 * 좋음;나쁨 
+		 * 이러한 properties가 있는데 실질적으로 CT 제품에 들어가는 내용은
+		 * 좋음 만 들어갑니다 . 그래서 이러한경우를 추가해주기위하여 split하여 
+		 * 추가되는 코드입니다.
+		 */
+		if(value.contains(";")){
+			int index = 0;
+			String[] splitValue = value.split(";");
+				for(String indexSplit : splitValue){
+				if(isKorean){
+					parameterMap.put(indexSplit, key+"_Semicolon_"+index);
+				}else{
+					parameterMapEn.put(key+"_Semicolon_"+index,indexSplit);
+				}
+				index++;
+			}
+		}
+		
+		/**
+		 * {0} 김정진 {1} 같은 부분은 없애고 
+		 * 없앤 뒤 부분부분을 split을 사용하여
+		 * 나누기 위하여 추가되었습니다
+		 * 정규식 > COTAINS_RANDOM_VALUE_REGEX
+		 * ".*\\{[0-9]\\}.*"
+		 */
 		if(value.matches(COTAINS_RANDOM_VALUE_REGEX)){
 			ArrayList<String> splitList = ParameterValidation.getValidationRandomValue(value);
-			
 			int index = 0;
 			for(String splitString : splitList){
 				if(valueCheck(splitString)){
 					if(isKorean){
-						parameterMap.put(splitString, key+"_"+index);
+						parameterMap.put(splitString, key+"_ContainRandomValue_"+index);
+						parameterMap.put(splitString.replace("\\n", ""), key+"_ContainRandomValue_RemoveNewLine"+index);
 					}else{
-						parameterMapEn.put(key+"_"+index,splitString);
+						parameterMapEn.put(key+"_ContainRandomValue_"+index,splitString);
+						parameterMapEn.put(key+"_ContainRandomValue_RemoveNewLine"+index,splitString.replace("\\n", ""));
+						
 					}
 					index++;
 				}
 			}
 		}
+		
+		/**
+		 * 기본 오리지널 키를 추가해주며 \\n 의경우가 붙은경우가있고 안붙은 경우가 있어
+		 * 그부분을 삭제한것을 추가로 맵에 저장합니다.
+		 */
 		else if(valueCheck(value)){
 			if(isKorean){
 				parameterMap.put(value,key);	
+				String removeNewLine = value.replace("\\n", "");
+				if(!removeNewLine.equals(value)){
+					parameterMap.put(removeNewLine , key+"_Original_And_RemoveNewLine");
+				}
 			}else{
 				parameterMapEn.put(key , value);
+				String removeNewLine = value.replace("\\n", "");
+				if(!removeNewLine.equals(value)){
+					parameterMapEn.put(key+"_Original_And_RemoveNewLine" , removeNewLine);
+				}
 			}
 			
 			if(!valueOriginal.equals(value)){
@@ -165,6 +208,7 @@ public class ProgramData {
 			
 		}
 		
+		
 	}
 	
 	/**
@@ -180,19 +224,56 @@ public class ProgramData {
 			boolean specialCheck = false;
 			for(char specialChar : value.toCharArray()){
 				specialCheck = Pattern.matches(SPECIAL_CHAR_REGEX, specialChar+"");
-				if(!specialCheck)
+				if(!specialCheck){
 					valueSpecialString.append(specialChar);
+				}
 				else{
 					valueSpecialString.append("\\\\");
 					valueSpecialString.append(specialChar);
 				}
 			}
-			
-			if(isKorean){
-				parameterMap.put(valueSpecialString.toString(), key+"_AddBackSlash");
-			}else{
-				parameterMapEn.put(key+"_AddBackSlash" , valueSpecialString.toString());
-			}
+			if(!value.contains("extension_")){
+				if(isKorean){
+					parameterMap.put(valueSpecialString.toString(), key+"_AddBackSlash");
+				}else{
+					parameterMapEn.put(key+"_AddBackSlash" , valueSpecialString.toString());
+				}
+				if(value.contains("/")){
+				
+					String[] split = value.split("/");
+					int index = 0;
+					for(String aSplit :split){
+						if(isKorean){
+							parameterMap.put(aSplit, key+"_AddSplitSlash_"+index);
+						}else{
+							parameterMapEn.put(key+"_AddSplitSlash_"+index,aSplit);
+						}
+						index++;
+					}
+					split = valueSpecialString.toString().split("/");
+					index = 0;
+					for(String aSplit :split){
+						if(isKorean){
+							parameterMap.put(aSplit, key+"_AddSplitSlashAndBackSlash_"+index);
+						}else{
+							parameterMapEn.put(key+"_AddSplitSlashAndBackSlash_"+index,aSplit);
+						}
+						index++;
+					}
+				}
+			}			
+		}
+	
+	}
+	
+	/**
+	 * 파라미터가 추가될때 중복 코드가 어디서
+	 * 발생하는지 ParameterCollsionMsg.txt 파일에 로그를 남깁니다.
+	 */
+	private void printParameterCollision(String key , String value){
+		String otherKey = "";
+		if((otherKey = parameterMap.get(value))!=null){
+			Logger.collisionMsg(key,otherKey,value);
 		}
 	}
 	
@@ -216,8 +297,7 @@ public class ProgramData {
 	}
 	
 	/**
-	 * Get Set
-	 * @return
+	 * get set
 	 */
 	public RcpttProject getProject() {
 		return project;
@@ -238,6 +318,7 @@ public class ProgramData {
 	public Map<String, String> getParameterMap() {
 		return parameterMap;
 	}
+	
 	public Map<String, String> getParameterMapEn() {
 		return parameterMapEn;
 	}

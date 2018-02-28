@@ -24,7 +24,6 @@ public class RObjectContent {
 	* 추후 확인되는 RCPTT API 있을경우 변경 예정입니다.
 	* (하드코딩) 
 	*/
-	
 	private String startLine ;
 	private String contentType ;
 	private String entryName ;
@@ -75,7 +74,6 @@ public class RObjectContent {
 		this.setType();
 		this.path = path;
 	}
-
 	
 	/**
 	 * RObject에서 저장할때 ( save() ) content의 포멧대로
@@ -128,7 +126,7 @@ public class RObjectContent {
 				for(String temp : saveParameter.keySet()){
 					outputStringBuilder.append(temp);
 					outputStringBuilder.append("=");
-					outputStringBuilder.append(saveParameter.get(temp));
+					outputStringBuilder.append(Converter.convertKoreanToUnicode(saveParameter.get(temp)));
 					outputStringBuilder.append("\n");
 				}
 				
@@ -163,11 +161,8 @@ public class RObjectContent {
 		}
 	}
 
-	
-	
 	/**
 	 * get set
-	 * @return
 	 */
 	public String getStart_line() {
 		return startLine;
@@ -224,9 +219,11 @@ public class RObjectContent {
 	public void setType(RcpttResourceType type) {
 		this.type = type;
 	}
+	
 	public String getPath() {
 		return path;
 	}
+	
 	public void setPath(String path) {
 		this.path = path;
 	}

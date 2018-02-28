@@ -27,7 +27,6 @@ import java.util.Properties;
  * </pre>
  * 
  * @author suresoft
- *
  */
 public class UserInputData {	
 	/**
@@ -115,6 +114,7 @@ public class UserInputData {
 		InputStream is = null;
 		
 		File iniFile = new File(iniFileName);
+		
 		if(iniFile.exists()){ // ini 파일 
 			try {
 				p = new Properties();
@@ -128,8 +128,9 @@ public class UserInputData {
 				ErrorMessage.getInstance().printErrorMessage("UserInfoData.read.properties.error");
 			}finally{
 				try {
-					if(is!=null)
+					if(is!=null){
 						is.close();
+					}
 					p = null;
 				} catch (IOException exception2) {
 					ErrorMessage.getInstance().printErrorMessage("UserInfoData.read.properties.error");
@@ -145,9 +146,7 @@ public class UserInputData {
 	}
 	
 	/**
-	 * Get Set
-	 * @param key
-	 * @return
+	 * get set
 	 */
 	private String searchIniInfo(String key){
 		return iniInfoMap.get(key);

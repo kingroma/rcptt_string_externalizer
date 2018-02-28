@@ -19,7 +19,6 @@ import com.java.util.UserInputData;
 
 
 /**
- *
  * <pre>
  * <b>프로세스 순서</b>
  * 0. rcptt++.ini 파일을 읽는다
@@ -93,9 +92,10 @@ public class Controller {
 
 		Logger.write("");
 		Logger.write("rcptt 문자열 스크립트 자동 치환 시스템 끝");
-
+		
 		mainTimer.end();
 		
+		//testKeyToEnglishObject();
 	}
 
 	/**
@@ -180,6 +180,7 @@ public class Controller {
 		
 		parameterCtx.save();
 		parameterCtxEn.save();
+		Logger.collisionMsgSave();
 		
 	}
 
@@ -258,6 +259,4 @@ public class Controller {
 			}
 		}
 	}
-
-
 }

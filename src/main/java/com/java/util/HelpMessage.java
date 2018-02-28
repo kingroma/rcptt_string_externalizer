@@ -78,6 +78,7 @@ public class HelpMessage {
 		helpMessageStringBuilder.append("2. CodeScrollFilePath\n");
 		helpMessageStringBuilder.append("3. ProjectPath\n");
 		helpMessageStringBuilder.append("4. ParameterCtxPath\n");
+		helpMessageStringBuilder.append("5. ParameterEnCtxPath\n");
 		helpMessageStringBuilder.append("순서대로 입력해주셔야 합니다.\n");
 		helpMessageStringBuilder.append("\n");
 		

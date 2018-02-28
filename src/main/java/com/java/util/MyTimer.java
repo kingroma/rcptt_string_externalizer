@@ -8,6 +8,7 @@ import java.util.Date;
  *
  */
 public class MyTimer {
+	
 	/**
 	 * 시작 시간을 담을 Date 형 변수
 	 */
@@ -48,7 +49,6 @@ public class MyTimer {
 		this.lTime = endTime.getTime() - startTime.getTime();
 		
 		Logger.write("\n [[ 걸린시간 : 약 " + Math.round((lTime / 1000.0)) + "(s) ]] ");
-		
 	}
 	
 	/**
@@ -70,7 +70,7 @@ public class MyTimer {
 	 * 총 시간 출력
 	 */
 	public void printAdd(){
-		Logger.write("\n [[ 걸린시간 : 약 " + Math.round((addTime / 1000)) + "(s) ]] ");
+		Logger.write("\n [[ 걸린시간 : 약 " + Math.round((addTime / 1000.0)) + "(s) ]] ");
 	}
 	
 	

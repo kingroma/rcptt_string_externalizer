@@ -8,6 +8,7 @@ package com.java.rcptt;
  * @see RObject
  */
 public class RObjectForm {
+	
 	/**
 	* RCPTT 파일의 정보는
 	* key: value 형식으로 되어있습니다.
@@ -25,6 +26,9 @@ public class RObjectForm {
 		this.value = value.trim();
 	}
 
+	/**
+	 * get set
+	 */
 	public String getKey() {
 		return key;
 	}
