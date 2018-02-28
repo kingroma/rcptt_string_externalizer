@@ -47,7 +47,7 @@ public class ProgramData {
 	 * parameter.ctx파일에서 읽은 파라미터를 총 저장하는 Map형식의 변수입니다.
 	 */
 	private Map<String, String> parameterMap;
-	
+	private Map<String, String> reverseParameterMap;
 	/**
 	 * Properties파일에서 읽은 영문 혹은 default parameter들과
 	 * parameterEn.ctx파일에서 읽은 파라미터를 총 저장하는 Map형식의 변수입니다.  
@@ -75,6 +75,7 @@ public class ProgramData {
 	private ProgramData(){
 		parameterMap = new HashMap<String, String>();		
 		parameterMapEn = new HashMap<String,String>();
+		reverseParameterMap = new HashMap<String,String>();
 	}
 	
 	/**
@@ -100,8 +101,9 @@ public class ProgramData {
 		
 		if(valueCheck(value)){
 			if(isKorean){
-				printParameterCollision(key,value);
+				printParameterCollision(key,value);				
 				parameterMap.put(value , key);
+				reverseParameterMap.put(key, value);
 			}else{
 				parameterMapEn.put(key, value);
 			}
@@ -120,6 +122,7 @@ public class ProgramData {
 	 * @param isKorean
 	 */
 	public void addParameter(String key , String value , String path, boolean isKorean){
+		
 		/**
 		 * 기본 유효성 검사
 		 * @see ParameterValidation
@@ -128,6 +131,7 @@ public class ProgramData {
 		String valueOriginal = Converter.convertUnicodeToKorean(ParameterValidation.getValidationValueOriginal(value));
 		value = Converter.convertUnicodeToKorean(ParameterValidation.getValidationValue(value));
 		
+		checkDuplicationKey(key,value);
 		printParameterCollision(key,value);
 		
 		/**
@@ -207,8 +211,14 @@ public class ProgramData {
 			}
 			
 		}
-		
-		
+	}
+	
+	public void checkDuplicationKey(String key,String value){
+		String reverseValue = reverseParameterMap.get(key);
+		if(reverseValue!=null){
+			reverseParameterMap.remove(key);
+			parameterMap.remove(reverseValue);
+		}
 	}
 	
 	/**
