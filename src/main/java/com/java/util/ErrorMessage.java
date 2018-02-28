@@ -42,32 +42,32 @@ public class ErrorMessage {
 	 * Map 에 저장합니다.
 	 */
 	private void initEnv(){
-		Properties properties = null;
-		InputStream is = null;
-		
-		try {
-			properties = new Properties();
-			is = new FileInputStream(new File(path));
-			errorMessageMap = new HashMap<String,String>();
-			
-			properties.load(is);
-			
-			for(Object obj : properties.keySet()){
-				String key = (String)obj;
-				errorMessageMap.put(key , properties.getProperty(key));
-			}
-			
-		} catch (Exception exception) {
-			exception.printStackTrace();
-		}finally{
-			try {
-				if(is!=null){
-					is.close();
-				}	
-			} catch (Exception exception2) {
-				exception2.printStackTrace();
-			}
-		}
+//		Properties properties = null;
+//		InputStream is = null;
+//		
+//		try {
+//			properties = new Properties();
+//			is = new FileInputStream(new File(path));
+//			errorMessageMap = new HashMap<String,String>();
+//			
+//			properties.load(is);
+//			
+//			for(Object obj : properties.keySet()){
+//				String key = (String)obj;
+//				errorMessageMap.put(key , properties.getProperty(key));
+//			}
+//			
+//		} catch (Exception exception) {
+//			exception.printStackTrace();
+//		}finally{
+//			try {
+//				if(is!=null){
+//					is.close();
+//				}	
+//			} catch (Exception exception2) {
+//				exception2.printStackTrace();
+//			}
+//		}
 		
 	}
 	
@@ -88,8 +88,9 @@ public class ErrorMessage {
 	 * @param key
 	 */
 	public void printErrorMessage(String key){
-		Logger.write("[[ ERROR MESSAGE ]] ");
-		Logger.write(errorMessageMap.get(key));
+//		Logger.write("[[ ERROR MESSAGE ]] ");
+//		Logger.write(errorMessageMap.get(key));
+		Logger.write("[[ ERROR ]] ");
 	}
 	
 	

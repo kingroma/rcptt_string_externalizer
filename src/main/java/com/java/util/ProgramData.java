@@ -47,12 +47,13 @@ public class ProgramData {
 	 * parameter.ctx파일에서 읽은 파라미터를 총 저장하는 Map형식의 변수입니다.
 	 */
 	private Map<String, String> parameterMap;
-	private Map<String, String> reverseParameterMap;
+
 	/**
 	 * Properties파일에서 읽은 영문 혹은 default parameter들과
 	 * parameterEn.ctx파일에서 읽은 파라미터를 총 저장하는 Map형식의 변수입니다.  
 	 */
 	private Map<String,String> parameterMapEn;
+	private Map<String, String> reverseParameterMap;
 	
 	/**
 	 * {0} , {1} , {2} 를 확인하기 위한

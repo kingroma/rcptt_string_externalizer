@@ -81,6 +81,7 @@ public class CheckProgramIniAndPropertiesFile {
 					fos = new FileOutputStream(file);
 					
 					if(path.equals(UserInputData.iniFileName)){
+						System.out.println(iniHelpText.toString());
 						ErrorMessage.getInstance().printErrorMessage(iniHelpText.toString());
 						fos.write(iniHelpText.toString().getBytes());
 					}else if(path.equals(defaultParameterFilename)){
@@ -96,12 +97,13 @@ public class CheckProgramIniAndPropertiesFile {
 						ErrorMessage.getInstance().printErrorMessage(forceChangeParameterEnHelpText.toString());
 						fos.write(Converter.convertKoreanToUnicode(forceChangeParameterEnHelpText.toString()).getBytes());
 					}
-					
+					fos.flush();
 				} catch (IOException exception) {
 					ErrorMessage.getInstance().printErrorMessage("CheckProgramIniAndPropertiesFile.IO.error");
 				}finally{
 					try {
 						if(fos!=null){
+							
 							fos.close();
 						}
 					} catch (IOException exception2) {
